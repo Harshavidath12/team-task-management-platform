@@ -90,7 +90,7 @@ export default function AdminLayout({ children }) {
         </div>
         
         {/* Navigation */}
-        <div className="flex-1 overflow-y-auto py-6 px-3 space-y-1">
+        <div className="flex-1 overflow-y-auto py-6 px-3 space-y-3">
           {navigation.map((item) => {
             const isActive = pathname === item.href || (pathname === '/admin/dashboard' && item.href === '/admin/users');
             return (
