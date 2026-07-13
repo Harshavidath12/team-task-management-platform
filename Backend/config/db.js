@@ -95,6 +95,22 @@ const initDB = async () => {
         `;
         await pool.query(createTasksTableQuery);
 
+        // Create reports table
+        const createReportsTableQuery = `
+            CREATE TABLE IF NOT EXISTS reports (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                project_id INT NOT NULL,
+                user_id INT NOT NULL,
+                date_range VARCHAR(255) NOT NULL,
+                status ENUM('Draft', 'Submitted') DEFAULT 'Draft',
+                content TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            );
+        `;
+        await pool.query(createReportsTableQuery);
+
         // Seed Default Admin Account
         const adminEmail = 'admin123@gmail.com';
         const adminPass = 'Admin@123';
