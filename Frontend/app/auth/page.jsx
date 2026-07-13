@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from 'react';
-import { Eye, EyeOff, Mail, Lock, User, Briefcase } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Briefcase, CheckCircle2 } from 'lucide-react';
 import axios from 'axios';
 import { useSearchParams, useRouter } from 'next/navigation';
 
@@ -48,6 +48,20 @@ function AuthContent() {
     e.preventDefault();
     setMessage('');
     setError('');
+    
+    if (!isLogin) {
+      const isValidPassword = 
+        formData.password.length >= 6 &&
+        /[A-Z]/.test(formData.password) &&
+        /[a-z]/.test(formData.password) &&
+        /[0-9]/.test(formData.password) &&
+        /[^A-Za-z0-9]/.test(formData.password);
+        
+      if (!isValidPassword) {
+        setError('Please meet all password requirements.');
+        return;
+      }
+    }
     
     try {
       if (isLogin) {
@@ -190,6 +204,27 @@ function AuthContent() {
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
+
+            {!isLogin && (
+              <div className="space-y-2 mt-2">
+                <div className={`flex items-center text-sm transition-colors duration-300 ${formData.password.length >= 6 ? 'text-green-500' : 'text-slate-400'}`}>
+                  <CheckCircle2 className="w-4 h-4 mr-2" />
+                  <span>Min. 6 characters</span>
+                </div>
+                <div className={`flex items-center text-sm transition-colors duration-300 ${(/[A-Z]/.test(formData.password) && /[a-z]/.test(formData.password)) ? 'text-green-500' : 'text-slate-400'}`}>
+                  <CheckCircle2 className="w-4 h-4 mr-2" />
+                  <span>1 Uppercase & 1 Lowercase</span>
+                </div>
+                <div className={`flex items-center text-sm transition-colors duration-300 ${/[0-9]/.test(formData.password) ? 'text-green-500' : 'text-slate-400'}`}>
+                  <CheckCircle2 className="w-4 h-4 mr-2" />
+                  <span>1 Number</span>
+                </div>
+                <div className={`flex items-center text-sm transition-colors duration-300 ${/[^A-Za-z0-9]/.test(formData.password) ? 'text-green-500' : 'text-slate-400'}`}>
+                  <CheckCircle2 className="w-4 h-4 mr-2" />
+                  <span>1 Special character (@, #, etc.)</span>
+                </div>
+              </div>
+            )}
 
             {!isLogin && (
               <div className="relative group">
