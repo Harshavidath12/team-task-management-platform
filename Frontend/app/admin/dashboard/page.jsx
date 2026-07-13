@@ -247,7 +247,7 @@ export default function AdminDashboard() {
                 <th scope="col" className="px-6 py-4 rounded-tl-3xl">User details</th>
                 <th scope="col" className="px-6 py-4">Role assignment</th>
                 <th scope="col" className="px-6 py-4">Status</th>
-                <th scope="col" className="px-6 py-4 text-right rounded-tr-3xl">Actions</th>
+                <th scope="col" className="px-6 py-4 rounded-tr-3xl">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -327,8 +327,8 @@ export default function AdminDashboard() {
                       </td>
                       
                       {/* Actions Column */}
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
                           {!u.is_approved && (
                             <button
                               onClick={() => handleApprove(u.id)}
