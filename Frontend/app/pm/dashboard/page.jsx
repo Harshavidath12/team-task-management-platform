@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Folder, Calendar, ArrowRight, AlertCircle, Plus, X, CheckCircle2 } from 'lucide-react';
+import { Folder, Calendar, ArrowRight, AlertCircle, Plus, X, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
 import api from '../../../utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -41,6 +41,7 @@ export default function PMDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [toast, setToast] = useState(null);
+  const [expandedProject, setExpandedProject] = useState(null);
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -184,9 +185,24 @@ export default function PMDashboard() {
 
                 {/* Content */}
                 <h3 className="text-xl font-bold text-slate-800 mb-2 tracking-tight group-hover:text-primary transition-colors line-clamp-1">{proj.title}</h3>
-                <p className="text-sm text-slate-500 mb-6 line-clamp-2 leading-relaxed flex-1">
-                  {proj.description || 'No description provided.'}
-                </p>
+                
+                <div className="mb-6 flex-1">
+                  <p className={`text-sm text-slate-500 leading-relaxed ${expandedProject === proj.id ? '' : 'line-clamp-2'}`}>
+                    {proj.description || 'No description provided.'}
+                  </p>
+                  {proj.description && proj.description.length > 80 && (
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setExpandedProject(expandedProject === proj.id ? null : proj.id);
+                      }}
+                      className="mt-2 inline-flex items-center text-xs font-bold text-primary hover:text-blue-700 transition-colors"
+                    >
+                      {expandedProject === proj.id ? 'View less' : 'View more'}
+                      {expandedProject === proj.id ? <ChevronUp className="w-3.5 h-3.5 ml-1" /> : <ChevronDown className="w-3.5 h-3.5 ml-1" />}
+                    </button>
+                  )}
+                </div>
 
                 {/* Footer details */}
                 <div className="mt-auto pt-5 border-t border-slate-100 flex items-center justify-between">
