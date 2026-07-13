@@ -28,9 +28,9 @@ exports.getTasksByProject = async (req, res) => {
 // Create a new task
 exports.createTask = async (req, res) => {
     try {
-        // Only Project Managers can create tasks
-        if (req.user.role !== 'project_manager') {
-            return res.status(403).json({ message: 'Access denied. Only Project Managers can create tasks.' });
+        // Team members manage tasks
+        if (req.user.role !== 'team_member') {
+            return res.status(403).json({ message: 'Access denied. Only Team Members can create tasks.' });
         }
 
         const { project_id, title, description, assigned_to, due_date } = req.body;
@@ -41,10 +41,19 @@ exports.createTask = async (req, res) => {
 
         const db = getDB();
         
-        // Verify that the project actually belongs to this Project Manager
-        const [projectCheck] = await db.query('SELECT manager_id FROM projects WHERE id = ?', [project_id]);
-        if (projectCheck.length === 0 || projectCheck[0].manager_id !== req.user.id) {
-            return res.status(403).json({ message: 'You are not assigned as the manager for this project.' });
+        // Verify that the team member is part of this project
+        const [projectCheck] = await db.query('SELECT assigned_members FROM projects WHERE id = ?', [project_id]);
+        if (projectCheck.length === 0) {
+            return res.status(404).json({ message: 'Project not found.' });
+        }
+        
+        let assignedMembers = [];
+        try {
+            assignedMembers = JSON.parse(projectCheck[0].assigned_members || '[]');
+        } catch (e) {}
+
+        if (!assignedMembers.includes(req.user.id)) {
+            return res.status(403).json({ message: 'You are not assigned to this project.' });
         }
 
         const [result] = await db.query(
@@ -81,15 +90,18 @@ exports.updateTaskStatus = async (req, res) => {
         const task = taskCheck[0];
 
         // Authorization: 
-        // 1. PMs can update any task in their projects (checked via project manager_id)
-        // 2. TMs can only update tasks assigned to them
-        if (req.user.role === 'team_member' && task.assigned_to !== req.user.id) {
-            return res.status(403).json({ message: 'You can only update tasks assigned to you.' });
-        }
-        if (req.user.role === 'project_manager') {
-            const [projectCheck] = await db.query('SELECT manager_id FROM projects WHERE id = ?', [task.project_id]);
-            if (projectCheck.length === 0 || projectCheck[0].manager_id !== req.user.id) {
-                return res.status(403).json({ message: 'You do not have permission to update tasks in this project.' });
+        // TMs can only update tasks in projects they are assigned to
+        if (req.user.role === 'team_member') {
+            const [projectCheck] = await db.query('SELECT assigned_members FROM projects WHERE id = ?', [task.project_id]);
+            if (projectCheck.length > 0) {
+                let assignedMembers = [];
+                try {
+                    assignedMembers = JSON.parse(projectCheck[0].assigned_members || '[]');
+                } catch (e) {}
+                
+                if (!assignedMembers.includes(req.user.id)) {
+                    return res.status(403).json({ message: 'You can only update tasks in projects you are assigned to.' });
+                }
             }
         }
 
@@ -104,9 +116,9 @@ exports.updateTaskStatus = async (req, res) => {
 // Delete a task
 exports.deleteTask = async (req, res) => {
     try {
-        // Only Project Managers can delete tasks
-        if (req.user.role !== 'project_manager') {
-            return res.status(403).json({ message: 'Access denied. Only Project Managers can delete tasks.' });
+        // Only Team Members can delete tasks
+        if (req.user.role !== 'team_member') {
+            return res.status(403).json({ message: 'Access denied. Only Team Members can delete tasks.' });
         }
 
         const { id } = req.params;
@@ -118,9 +130,16 @@ exports.deleteTask = async (req, res) => {
             return res.status(404).json({ message: 'Task not found' });
         }
         
-        const [projectCheck] = await db.query('SELECT manager_id FROM projects WHERE id = ?', [taskCheck[0].project_id]);
-        if (projectCheck.length === 0 || projectCheck[0].manager_id !== req.user.id) {
-            return res.status(403).json({ message: 'You do not have permission to delete tasks in this project.' });
+        const [projectCheck] = await db.query('SELECT assigned_members FROM projects WHERE id = ?', [taskCheck[0].project_id]);
+        if (projectCheck.length > 0) {
+            let assignedMembers = [];
+            try {
+                assignedMembers = JSON.parse(projectCheck[0].assigned_members || '[]');
+            } catch (e) {}
+            
+            if (!assignedMembers.includes(req.user.id)) {
+                return res.status(403).json({ message: 'You do not have permission to delete tasks in this project.' });
+            }
         }
 
         const [result] = await db.query('DELETE FROM tasks WHERE id = ?', [id]);
