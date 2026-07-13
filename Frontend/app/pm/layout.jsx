@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { LayoutDashboard, LogOut, Briefcase } from 'lucide-react';
+import { LayoutDashboard, LogOut, Briefcase, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 export default function PMLayout({ children }) {
   const router = useRouter();
@@ -38,6 +39,7 @@ export default function PMLayout({ children }) {
 
   const navigation = [
     { name: 'My Projects', href: '/pm/dashboard', icon: LayoutDashboard },
+    { name: 'Team Reports', href: '/pm/reports', icon: FileText },
   ];
 
   if (loading) {
@@ -65,9 +67,9 @@ export default function PMLayout({ children }) {
           {navigation.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
-              <button
+              <Link
                 key={item.name}
-                onClick={() => router.push(item.href)}
+                href={item.href}
                 className={`w-full flex items-center relative group px-4 py-3 rounded-2xl transition-all duration-300 ${
                   isActive 
                     ? 'text-primary bg-blue-50/50 font-bold' 
@@ -84,7 +86,7 @@ export default function PMLayout({ children }) {
                 )}
                 <item.icon className={`w-5 h-5 mr-3.5 relative z-10 transition-colors duration-300 ${isActive ? 'text-primary' : 'text-slate-400 group-hover:text-slate-600'}`} />
                 <span className="relative z-10 tracking-wide text-[14px]">{item.name}</span>
-              </button>
+              </Link>
             );
           })}
         </div>
