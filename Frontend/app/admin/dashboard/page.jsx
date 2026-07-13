@@ -283,16 +283,24 @@ export default function AdminDashboard() {
                       {/* Role Column */}
                       <td className="px-6 py-4 relative">
                         <div className="relative inline-block w-40">
-                          <select
-                            value={u.role}
-                            onChange={(e) => handleRoleChange(u.id, e.target.value)}
-                            className={`w-full appearance-none px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors cursor-pointer outline-none focus:ring-2 focus:ring-primary/20 ${roleConfig[u.role].color}`}
-                          >
-                            <option value="admin">Administrator</option>
-                            <option value="project_manager">Project Manager</option>
-                            <option value="team_member">Team Member</option>
-                          </select>
-                          <ChevronDown className={`absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none opacity-60`} />
+                          {u.role === 'admin' ? (
+                            <div className={`w-full px-3 py-1.5 rounded-lg text-xs font-bold border ${roleConfig[u.role].color}`}>
+                              Administrator
+                            </div>
+                          ) : (
+                            <>
+                              <select
+                                value={u.role}
+                                onChange={(e) => handleRoleChange(u.id, e.target.value)}
+                                className={`w-full appearance-none px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors cursor-pointer outline-none focus:ring-2 focus:ring-primary/20 ${roleConfig[u.role].color}`}
+                              >
+                                <option value="admin">Administrator</option>
+                                <option value="project_manager">Project Manager</option>
+                                <option value="team_member">Team Member</option>
+                              </select>
+                              <ChevronDown className={`absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none opacity-60`} />
+                            </>
+                          )}
                         </div>
                       </td>
                       
