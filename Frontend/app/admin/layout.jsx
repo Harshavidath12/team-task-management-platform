@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Users, LogOut, LayoutDashboard, Settings, ChevronLeft, ChevronRight, CheckSquare } from 'lucide-react';
+import { Users, LogOut, LayoutDashboard, Settings, ChevronLeft, ChevronRight, CheckSquare, Folder } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AdminLayout({ children }) {
@@ -51,7 +51,7 @@ export default function AdminLayout({ children }) {
 
   const navigation = [
     { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-    { name: 'User Management', href: '/admin/users', icon: Users },
+    { name: 'Project Management', href: '/admin/projects', icon: Folder },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
   ];
 
@@ -156,9 +156,13 @@ export default function AdminLayout({ children }) {
         <header className="h-[72px] bg-white/80 backdrop-blur-md border-b border-slate-200/60 flex items-center px-8 shadow-[0_1px_2px_rgba(0,0,0,0.02)] sticky top-0 z-10">
           <div>
             <h1 className="text-xl font-bold text-slate-800 tracking-tight">
-              {pathname.includes('dashboard') ? 'Team Directory' : 'Administration'}
+              {pathname.includes('dashboard') ? 'Team Directory' : 
+               pathname.includes('projects') ? 'Project Portfolio' : 'Administration'}
             </h1>
-            <p className="text-xs font-medium text-slate-500">Manage your workspace access and permissions</p>
+            <p className="text-xs font-medium text-slate-500">
+              {pathname.includes('dashboard') ? 'Manage your workspace access and permissions' : 
+               pathname.includes('projects') ? 'Track and manage all team projects' : 'System settings'}
+            </p>
           </div>
         </header>
         <main className="flex-1 overflow-y-auto p-4 sm:p-8">
