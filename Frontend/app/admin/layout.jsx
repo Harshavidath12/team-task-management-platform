@@ -52,7 +52,6 @@ export default function AdminLayout({ children }) {
   const navigation = [
     { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
     { name: 'Project Management', href: '/admin/projects', icon: Folder },
-    { name: 'Settings', href: '/admin/settings', icon: Settings },
   ];
 
   return (
