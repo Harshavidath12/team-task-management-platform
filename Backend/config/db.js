@@ -1,4 +1,5 @@
 const mysql = require('mysql2/promise');
+const bcrypt = require('bcrypt');
 require('dotenv').config();
 
 let pool;
@@ -49,6 +50,22 @@ const initDB = async () => {
             if (err.code !== 'ER_DUP_FIELDNAME') {
                 console.warn('Could not alter users table:', err.message);
             }
+        }
+
+        // Seed Default Admin Account
+        const adminEmail = 'admin123@gmail.com';
+        const adminPass = 'Admin@123';
+        const [adminRows] = await pool.query('SELECT id FROM users WHERE email = ?', [adminEmail]);
+        
+        if (adminRows.length === 0) {
+            const salt = await bcrypt.genSalt(10);
+            const hashedPass = await bcrypt.hash(adminPass, salt);
+            
+            await pool.query(
+                'INSERT INTO users (name, email, password, role, is_approved) VALUES (?, ?, ?, ?, ?)',
+                ['System Admin', adminEmail, hashedPass, 'admin', true]
+            );
+            console.log('Default admin account seeded successfully.');
         }
 
     } catch (error) {

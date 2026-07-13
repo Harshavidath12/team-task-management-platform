@@ -1,38 +1,56 @@
-<!-- This is my readme.md file-->
+# Team Task Management Platform
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This is a full-stack web application built with **Next.js** (Frontend) and **Node.js/Express** (Backend), using **MySQL** for the database.
 
-## Getting Started
+## Instructions for Examiner / Evaluation
 
-First, run the development server:
+This project is built to be "plug-and-play" to make evaluation as easy as possible. **You do not need to manually create the database or import any SQL files.** The backend will automatically handle the database creation, table migrations, and seeding of the default admin account.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Prerequisites
+1. **Node.js** installed on your machine.
+2. **MySQL Server** running on default port `3306` (e.g., via XAMPP, WAMP, or standalone MySQL). 
+   - By default, the project expects: Username: `root` | Password: *(blank)*.
+   - *If your local MySQL server uses a different username or has a password, you will simply update this in the `.env` file in Step 1.*
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 1. Backend Setup
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+1. Open a terminal and navigate to the `Backend` folder:
+   ```bash
+   cd Backend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Create your environment variables file:
+   - Copy the `.env.example` file and rename it to `.env`
+   - *(The default settings in this file are already configured for a standard local MySQL setup).*
+4. Start the backend server:
+   ```bash
+   node server.js
+   # or
+   npm run dev
+   ```
+> **Note:** Upon starting, the backend will automatically create the `project_dashboard_db` database, generate the `users` table, and securely seed the default Admin account.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 2. Frontend Setup
 
-## Learn More
+1. Open a new terminal and navigate to the `Frontend` folder:
+   ```bash
+   cd Frontend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the Next.js development server:
+   ```bash
+   npm run dev
+   ```
+4. Open your browser and navigate to [http://localhost:3000](http://localhost:3000)
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Default Admin Credentials
+To access the admin dashboard or approve new users, use the default seeded admin account on the Login page:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Email:** `admin123@gmail.com`
+- **Password:** `Admin@123`
