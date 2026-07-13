@@ -76,6 +76,25 @@ const initDB = async () => {
             }
         }
 
+        // Create tasks table
+        const createTasksTableQuery = `
+            CREATE TABLE IF NOT EXISTS tasks (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                project_id INT NOT NULL,
+                title VARCHAR(255) NOT NULL,
+                description TEXT,
+                status ENUM('to_do', 'in_progress', 'review', 'done') DEFAULT 'to_do',
+                assigned_to INT,
+                created_by INT NOT NULL,
+                due_date DATE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+                FOREIGN KEY (assigned_to) REFERENCES users(id) ON DELETE SET NULL,
+                FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
+            );
+        `;
+        await pool.query(createTasksTableQuery);
+
         // Seed Default Admin Account
         const adminEmail = 'admin123@gmail.com';
         const adminPass = 'Admin@123';
