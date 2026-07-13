@@ -337,13 +337,15 @@ export default function AdminDashboard() {
                               <Check className="w-3.5 h-3.5 mr-1.5" /> Approve
                             </button>
                           )}
-                          <button
-                            onClick={() => setDeleteModal({ isOpen: true, userId: u.id })}
-                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
-                            title="Delete User"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          {u.role !== 'admin' && (
+                            <button
+                              onClick={() => setDeleteModal({ isOpen: true, userId: u.id })}
+                              className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors opacity-60 hover:opacity-100"
+                              title="Delete User"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </motion.tr>
