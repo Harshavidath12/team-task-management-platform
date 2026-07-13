@@ -38,7 +38,7 @@ export default function PMLayout({ children }) {
   };
 
   const navigation = [
-    { name: 'My Projects', href: '/pm/dashboard', icon: LayoutDashboard },
+    { name: 'My Projects', href: '/pm/myprojects', icon: LayoutDashboard },
     { name: 'Team Reports', href: '/pm/reports', icon: FileText },
   ];
 
