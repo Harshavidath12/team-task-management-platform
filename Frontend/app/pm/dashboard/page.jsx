@@ -210,6 +210,40 @@ export default function PMDashboard() {
                     <Calendar className="w-3.5 h-3.5 mr-1.5 text-slate-400" />
                     {proj.end_date ? new Date(proj.end_date).toLocaleDateString() : 'No Deadline'}
                   </div>
+                  
+                  {/* Assigned Members Avatars */}
+                  {proj.assigned_members && (() => {
+                    let memberIds = [];
+                    try {
+                      memberIds = typeof proj.assigned_members === 'string' ? JSON.parse(proj.assigned_members) : proj.assigned_members;
+                    } catch (e) {}
+                    
+                    const assignedUsers = memberIds
+                      .map(id => teamMembers.find(m => m.id === id))
+                      .filter(Boolean);
+
+                    if (assignedUsers.length === 0) return null;
+
+                    return (
+                      <div className="flex items-center -space-x-2">
+                        {assignedUsers.slice(0, 3).map((user, i) => (
+                          <div 
+                            key={user.id} 
+                            title={user.name}
+                            className="w-8 h-8 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center text-[10px] font-bold text-primary z-10"
+                            style={{ zIndex: 10 - i }}
+                          >
+                            {user.name.charAt(0).toUpperCase()}
+                          </div>
+                        ))}
+                        {assignedUsers.length > 3 && (
+                          <div className="w-8 h-8 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-600 z-0">
+                            +{assignedUsers.length - 3}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               </motion.div>
             );
