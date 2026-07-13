@@ -78,7 +78,7 @@ function AuthContent() {
         if (res.data.user.role === 'admin') {
           router.push('/admin/dashboard');
         } else if (res.data.user.role === 'project_manager') {
-          router.push('/pm/dashboard');
+          router.push('/pm/myprojects');
         } else {
           router.push('/tm/dashboard');
         }
