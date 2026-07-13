@@ -126,7 +126,7 @@ export default function AdminProjectDelegation() {
       <div className="bg-white rounded-3xl border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
         <div className="overflow-x-auto min-h-[400px]">
           <table className="w-full text-left text-sm text-slate-600">
-            <thead className="text-xs font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-100 bg-slate-50/50">
+            <thead className="text-xs font-semibold text-blue-600 uppercase tracking-wider border-b border-blue-100 bg-blue-50/50">
               <tr>
                 <th scope="col" className="px-6 py-4 rounded-tl-3xl">Project Details</th>
                 <th scope="col" className="px-6 py-4">Status</th>
