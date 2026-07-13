@@ -61,3 +61,60 @@ exports.approveUser = async (req, res) => {
         res.status(500).json({ message: 'Server error during user approval' });
     }
 };
+
+exports.getUsers = async (req, res) => {
+    try {
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Access denied. Admins only.' });
+        }
+        
+        const db = getDB();
+        const [users] = await db.query('SELECT id, name, email, role, is_approved, created_at FROM users ORDER BY created_at DESC');
+        
+        res.json(users);
+    } catch (error) {
+        console.error('Fetch users error:', error);
+        res.status(500).json({ message: 'Server error while fetching users' });
+    }
+};
+
+exports.updateUserRole = async (req, res) => {
+    try {
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Access denied. Admins only.' });
+        }
+        
+        const { id } = req.params;
+        const { role } = req.body;
+        
+        if (!['admin', 'project_manager', 'team_member'].includes(role)) {
+            return res.status(400).json({ message: 'Invalid role provided' });
+        }
+        
+        const db = getDB();
+        await db.query('UPDATE users SET role = ? WHERE id = ?', [role, id]);
+        
+        res.json({ message: 'User role updated successfully' });
+    } catch (error) {
+        console.error('Update role error:', error);
+        res.status(500).json({ message: 'Server error while updating role' });
+    }
+};
+
+exports.deleteUser = async (req, res) => {
+    try {
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Access denied. Admins only.' });
+        }
+        
+        const { id } = req.params;
+        const db = getDB();
+        
+        await db.query('DELETE FROM users WHERE id = ?', [id]);
+        
+        res.json({ message: 'User deleted successfully' });
+    } catch (error) {
+        console.error('Delete user error:', error);
+        res.status(500).json({ message: 'Server error while deleting user' });
+    }
+};
