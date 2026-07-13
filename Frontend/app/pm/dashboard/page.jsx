@@ -167,8 +167,7 @@ export default function PMDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
                 key={proj.id}
-                onClick={() => router.push(`/pm/projects/${proj.id}`)}
-                className="group bg-white rounded-3xl border border-slate-200/60 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-6 cursor-pointer flex flex-col h-full relative overflow-hidden"
+                className="group bg-white rounded-3xl border border-slate-200/60 shadow-sm p-6 flex flex-col h-full relative overflow-hidden"
               >
                 {/* Status Badge */}
                 <div className="absolute top-6 right-6">
@@ -194,10 +193,6 @@ export default function PMDashboard() {
                   <div className="flex items-center text-xs font-semibold text-slate-400">
                     <Calendar className="w-3.5 h-3.5 mr-1.5 text-slate-400" />
                     {proj.end_date ? new Date(proj.end_date).toLocaleDateString() : 'No Deadline'}
-                  </div>
-                  
-                  <div className="flex items-center text-primary text-sm font-bold opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-                    Manage Tasks <ArrowRight className="w-4 h-4 ml-1" />
                   </div>
                 </div>
               </motion.div>
