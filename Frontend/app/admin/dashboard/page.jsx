@@ -242,7 +242,7 @@ export default function AdminDashboard() {
         {/* Table */}
         <div className="overflow-x-auto min-h-[400px]">
           <table className="w-full text-left text-sm text-slate-600">
-            <thead className="text-xs font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-100 bg-slate-50/50">
+            <thead className="text-xs font-semibold text-blue-600 uppercase tracking-wider border-b border-blue-100 bg-blue-50/50">
               <tr>
                 <th scope="col" className="px-6 py-4 rounded-tl-3xl">User details</th>
                 <th scope="col" className="px-6 py-4">Role assignment</th>
