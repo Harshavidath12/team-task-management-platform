@@ -203,21 +203,24 @@ export default function TMReports() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-3xl p-8 w-full max-w-3xl shadow-2xl relative max-h-[90vh] overflow-y-auto"
+            className="bg-white rounded-3xl w-full max-w-3xl shadow-2xl relative max-h-[90vh] flex flex-col overflow-hidden"
           >
-            <button 
-              onClick={() => setViewReport(null)}
-              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-slate-400 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <div className="shrink-0 px-8 pt-8 pb-6 bg-white relative z-10 border-b border-slate-50">
+              <button 
+                onClick={() => setViewReport(null)}
+                className="absolute top-8 right-8 p-2 rounded-full hover:bg-slate-100 text-slate-400 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
 
-            <div className="flex items-center gap-3 mb-6">
-              <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Report Details</h2>
-              {getStatusBadge(viewReport.status)}
+              <div className="flex items-center gap-3 pr-12">
+                <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Report Details</h2>
+                {getStatusBadge(viewReport.status)}
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-8">
+            <div className="overflow-y-auto px-8 py-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              <div className="grid grid-cols-2 gap-4 mb-8">
               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
                 <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Project</p>
                 <p className="text-sm font-semibold text-slate-800">{viewReport.project_title}</p>
@@ -274,6 +277,7 @@ export default function TMReports() {
                 </div>
               </div>
             </div>
+          </div>
           </motion.div>
         </div>
       )}
@@ -284,23 +288,26 @@ export default function TMReports() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-slate-50 rounded-3xl p-8 w-full max-w-3xl shadow-2xl relative max-h-[90vh] overflow-y-auto"
+            className="bg-slate-50 rounded-3xl w-full max-w-3xl shadow-2xl relative max-h-[90vh] flex flex-col overflow-hidden"
           >
-            <button 
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-200 text-slate-400 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <div className="shrink-0 px-8 pt-8 pb-6 bg-slate-50 relative z-10 border-b border-slate-200/50">
+              <button 
+                onClick={() => setIsModalOpen(false)}
+                className="absolute top-8 right-8 p-2 rounded-full hover:bg-slate-200 text-slate-400 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
 
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-slate-800 tracking-tight flex items-center">
-                <FileText className="w-6 h-6 mr-3 text-orange-500" /> Draft New Report
-              </h2>
-              <p className="text-sm text-slate-500 font-medium mt-2">Fill out the details below to log your progress.</p>
+              <div className="pr-12">
+                <h2 className="text-2xl font-bold text-slate-800 tracking-tight flex items-center">
+                  <FileText className="w-6 h-6 mr-3 text-orange-500" /> Draft New Report
+                </h2>
+                <p className="text-sm text-slate-500 font-medium mt-2">Fill out the details below to log your progress.</p>
+              </div>
             </div>
             
-            <form className="space-y-6">
+            <div className="overflow-y-auto px-8 py-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              <form className="space-y-6">
               
               <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
                 <h3 className="flex items-center text-sm font-bold text-slate-800 mb-6">
@@ -466,7 +473,8 @@ export default function TMReports() {
                   Submit Report
                 </button>
               </div>
-            </form>
+              </form>
+            </div>
           </motion.div>
         </div>
       )}
