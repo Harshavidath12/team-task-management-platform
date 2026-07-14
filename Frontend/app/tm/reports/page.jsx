@@ -322,6 +322,7 @@ export default function TMReports() {
                     <input
                       required
                       type="date"
+                      max={new Date().toISOString().split('T')[0]}
                       value={startDate}
                       onChange={e => setStartDate(e.target.value)}
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-slate-700"
@@ -334,6 +335,7 @@ export default function TMReports() {
                     <input
                       required
                       type="date"
+                      max={new Date().toISOString().split('T')[0]}
                       value={endDate}
                       onChange={e => setEndDate(e.target.value)}
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-slate-700"
