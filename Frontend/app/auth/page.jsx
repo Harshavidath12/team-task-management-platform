@@ -50,6 +50,12 @@ function AuthContent() {
     setError('');
     
     if (!isLogin) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.(com|net|org|edu|gov|io|co)$/i;
+      if (!emailRegex.test(formData.email)) {
+        setError('Please enter a valid email address (e.g., ending in .com).');
+        return;
+      }
+
       const isValidPassword = 
         formData.password.length >= 6 &&
         /[A-Z]/.test(formData.password) &&
