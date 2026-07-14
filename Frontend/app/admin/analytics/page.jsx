@@ -86,11 +86,6 @@ export default function AnalyticsPage() {
               <BarChart2 className="w-10 h-10 text-primary mb-2" />
               <h2 className="text-lg font-bold text-slate-800">TeamReports</h2>
             </div>
-            
-            <div className="space-y-2">
-              <h1 className="text-2xl font-bold text-slate-800">Team Overview</h1>
-              <p className="text-slate-500 text-sm">Monitor team progress, workload distribution, and weekly reports.</p>
-            </div>
         </div>
 
         {/* Filters */}
