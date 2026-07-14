@@ -211,15 +211,9 @@ exports.getAnalytics = async (req, res) => {
                 complianceRate: compliance_rate,
                 openBlockers: open_blockers
             },
-            velocity: velocityRows.length > 0 ? velocityRows : [
-                { date: 'Jul 1, 2026', tasks: 1 }, { date: 'Jul 2, 2026', tasks: 5 }, { date: 'Jul 9, 2026', tasks: 3 }, { date: 'Jul 10, 2026', tasks: 1 }
-            ],
-            workload: workloadRows.length > 0 ? workloadRows : [
-                { project: 'EcoSmart', count: 3 }, { project: 'Smart Campus', count: 2 }, { project: 'Analytics', count: 3 }
-            ],
-            submissions: submissionRows.length > 0 ? submissionRows : [
-                { status: 'Draft', count: 2 }, { status: 'Submitted', count: 6 }
-            ]
+            velocity: velocityRows,
+            workload: workloadRows,
+            submissions: submissionRows
         });
         
     } catch (error) {
