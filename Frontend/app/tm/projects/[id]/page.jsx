@@ -50,7 +50,7 @@ export default function TMProjectKanban() {
     setTasks(prev => prev.map(t => t.id == taskId ? { ...t, status: newStatus } : t));
 
     try {
-      await api.put(`/tasks/${taskId}`, { status: newStatus });
+      await api.put(`/tasks/${taskId}/status`, { status: newStatus });
     } catch (err) {
       // Revert if failed
       fetchTasks();
