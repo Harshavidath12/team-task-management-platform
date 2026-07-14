@@ -10,4 +10,10 @@
     background-color: #f8fafc;
     color: #0f172a;
   }
+
+  /* Hide default browser eye icons for password fields to prevent duplicate icons */
+  input[type="password"]::-ms-reveal,
+  input[type="password"]::-ms-clear {
+    display: none;
+  }
 }

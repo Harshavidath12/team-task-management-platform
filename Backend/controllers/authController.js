@@ -11,6 +11,11 @@ exports.register = async (req, res) => {
             return res.status(400).json({ message: 'Please provide all required fields' });
         }
 
+        const emailRegex = /^[^\s@]+@[^\s@]+\.(com|net|org|edu|gov|io|co)$/i;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ message: 'Invalid email format. Please use a valid domain.' });
+        }
+
         const requestedRole = role || 'team_member';
 
         // Auto-approve the first admin to bootstrap the system
