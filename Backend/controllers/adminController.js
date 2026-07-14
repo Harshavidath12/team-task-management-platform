@@ -141,9 +141,9 @@ exports.getAnalytics = async (req, res) => {
         }
 
         if (user_id && user_id !== 'all') {
-            taskWhere += ' AND assigned_to = ?';
+            taskWhere += ' AND (assigned_to = ? OR created_by = ?)';
             reportWhere += ' AND user_id = ?';
-            taskParams.push(user_id);
+            taskParams.push(user_id, user_id);
             reportParams.push(user_id);
         }
 
@@ -230,7 +230,7 @@ exports.getAnalyticsFilters = async (req, res) => {
         
         const db = getDB();
         
-        const [users] = await db.query('SELECT id, name FROM users ORDER BY name ASC');
+        const [users] = await db.query("SELECT id, name FROM users WHERE role = 'team_member' ORDER BY name ASC");
         const [projects] = await db.query('SELECT id, title FROM projects ORDER BY title ASC');
         
         res.json({

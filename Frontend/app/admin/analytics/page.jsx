@@ -94,14 +94,14 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Filters */}
-        <div className="flex items-center gap-3 self-start xl:self-center flex-wrap">
-          <div className="flex items-center text-slate-400 gap-1 text-sm mr-2 font-medium">
+        <div className="flex items-center gap-2 md:gap-3 self-start xl:self-center overflow-x-auto pb-2 xl:pb-0 w-full xl:w-auto scrollbar-hide flex-nowrap">
+          <div className="flex items-center text-slate-400 gap-1 text-sm font-medium whitespace-nowrap">
              <Filter className="w-4 h-4" /> FILTERS
           </div>
           <select 
             value={filters.user_id} 
             onChange={(e) => setFilters({...filters, user_id: e.target.value})}
-            className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-600 focus:outline-none focus:border-primary shadow-sm"
+            className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-600 focus:outline-none focus:border-primary shadow-sm min-w-[140px]"
           >
             <option value="all">All Members</option>
             {filtersData.users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
@@ -109,7 +109,7 @@ export default function AnalyticsPage() {
           <select 
             value={filters.project_id} 
             onChange={(e) => setFilters({...filters, project_id: e.target.value})}
-            className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-600 focus:outline-none focus:border-primary shadow-sm"
+            className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-600 focus:outline-none focus:border-primary shadow-sm min-w-[140px]"
           >
             <option value="all">All Projects</option>
             {filtersData.projects.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
@@ -117,7 +117,7 @@ export default function AnalyticsPage() {
           <select 
             value={filters.status} 
             onChange={(e) => setFilters({...filters, status: e.target.value})}
-            className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-600 focus:outline-none focus:border-primary shadow-sm"
+            className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-600 focus:outline-none focus:border-primary shadow-sm min-w-[140px]"
           >
             <option value="all">All Statuses</option>
             <option value="to_do">To Do</option>
