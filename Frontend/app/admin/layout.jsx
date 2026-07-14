@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Users, LogOut, LayoutDashboard, Settings, ChevronLeft, ChevronRight, CheckSquare, Folder } from 'lucide-react';
+import { Users, LogOut, LayoutDashboard, Settings, ChevronLeft, ChevronRight, CheckSquare, Folder, BarChart2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AdminLayout({ children }) {
@@ -52,6 +52,7 @@ export default function AdminLayout({ children }) {
   const navigation = [
     { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
     { name: 'Project Management', href: '/admin/projects', icon: Folder },
+    { name: 'Analytics', href: '/admin/analytics', icon: BarChart2 },
   ];
 
   return (
