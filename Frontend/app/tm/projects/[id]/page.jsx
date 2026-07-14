@@ -101,7 +101,7 @@ export default function TMProjectKanban() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
         <div className="flex items-center">
           <button
-            onClick={() => router.push('/tm/dashboard')}
+            onClick={() => router.push('/tm/projects')}
             className="mr-4 p-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 transition-colors"
           >
             <ArrowLeft className="w-5 h-5 text-slate-600" />

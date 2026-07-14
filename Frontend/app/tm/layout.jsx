@@ -38,7 +38,7 @@ export default function TMLayout({ children }) {
   };
 
   const navigation = [
-    { name: 'My Projects', href: '/tm/dashboard', icon: LayoutDashboard },
+    { name: 'My Projects', href: '/tm/projects', icon: LayoutDashboard },
     { name: 'Submit Report', href: '/tm/reports', icon: FileText },
   ];
 

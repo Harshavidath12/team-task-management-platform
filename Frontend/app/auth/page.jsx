@@ -80,7 +80,7 @@ function AuthContent() {
         } else if (res.data.user.role === 'project_manager') {
           router.push('/pm/myprojects');
         } else {
-          router.push('/tm/dashboard');
+          router.push('/tm/projects');
         }
       } else {
         const res = await axios.post('http://localhost:5000/api/auth/register', formData);
