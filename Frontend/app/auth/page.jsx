@@ -76,7 +76,20 @@ function AuthContent() {
           password: formData.password
         });
         setMessage(res.data.message);
-        // store token and redirect in the future...
+        
+        // Store token and user data
+        const { token, user } = res.data;
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        
+        // Redirect based on role
+        if (user.role === 'admin') {
+          router.push('/admin/dashboard');
+        } else if (user.role === 'project_manager') {
+          router.push('/pm/myprojects');
+        } else {
+          router.push('/tm/projects');
+        }
       } else {
         const res = await axios.post('http://localhost:5000/api/auth/register', formData);
         
