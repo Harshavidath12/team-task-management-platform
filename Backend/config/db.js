@@ -76,6 +76,33 @@ const initDB = async () => {
             }
         }
 
+        // Create tasks table
+        const createTasksTableQuery = `
+            CREATE TABLE IF NOT EXISTS tasks (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                project_id INT,
+                title VARCHAR(255) NOT NULL,
+                status ENUM('pending', 'in_progress', 'completed', 'blocked') DEFAULT 'pending',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+            );
+        `;
+        await pool.query(createTasksTableQuery);
+
+        // Create reports table
+        const createReportsTableQuery = `
+            CREATE TABLE IF NOT EXISTS reports (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                project_id INT,
+                submitted_by INT,
+                status ENUM('pending', 'submitted') DEFAULT 'pending',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+                FOREIGN KEY (submitted_by) REFERENCES users(id) ON DELETE CASCADE
+            );
+        `;
+        await pool.query(createReportsTableQuery);
+
         // Seed Default Admin Account
         const adminEmail = 'admin123@gmail.com';
         const adminPass = 'Admin@123';
