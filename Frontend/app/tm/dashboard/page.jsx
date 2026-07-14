@@ -99,7 +99,7 @@ export default function TMDashboard() {
                 <h3 className="text-lg font-bold text-slate-800 mb-2 group-hover:text-emerald-600 transition-colors">
                   {proj.title}
                 </h3>
-                
+
                 <div className="mb-6 flex-1">
                   <p className={`text-sm text-slate-500 ${expandedProject === proj.id ? '' : 'line-clamp-2'}`}>
                     {proj.description || 'No description provided.'}
@@ -122,9 +122,9 @@ export default function TMDashboard() {
                 <div className="mt-auto pt-5 border-t border-slate-100 flex items-center justify-between">
                   <div className="flex items-center text-xs font-semibold text-slate-400">
                     <Calendar className="w-3.5 h-3.5 mr-1.5 text-slate-400" />
-                    {proj.end_date ? new Date(proj.end_date).toLocaleDateString() : 'No Deadline'}
+                    {proj.end_date ? `Due : ${new Date(proj.end_date).toLocaleDateString()}` : 'No Deadline'}
                   </div>
-                  
+
                   <div className="text-emerald-500 flex items-center text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0 duration-300">
                     View Tasks <ArrowRight className="w-4 h-4 ml-1" />
                   </div>
