@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Folder, Calendar, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Folder, Calendar, ArrowRight, AlertCircle, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
 import api from '../../../utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -11,6 +11,7 @@ export default function TMDashboard() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [expandedProject, setExpandedProject] = useState(null);
 
   const fetchProjects = async () => {
     try {
@@ -99,9 +100,23 @@ export default function TMDashboard() {
                   {proj.title}
                 </h3>
                 
-                <p className="text-sm text-slate-500 line-clamp-2 mb-6 flex-1">
-                  {proj.description || 'No description provided.'}
-                </p>
+                <div className="mb-6 flex-1">
+                  <p className={`text-sm text-slate-500 ${expandedProject === proj.id ? '' : 'line-clamp-2'}`}>
+                    {proj.description || 'No description provided.'}
+                  </p>
+                  {proj.description && proj.description.length > 100 && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setExpandedProject(expandedProject === proj.id ? null : proj.id);
+                      }}
+                      className="mt-2 inline-flex items-center text-xs font-bold text-emerald-500 hover:text-emerald-700 transition-colors"
+                    >
+                      {expandedProject === proj.id ? 'View less' : 'View more'}
+                      {expandedProject === proj.id ? <ChevronUp className="w-3.5 h-3.5 ml-1" /> : <ChevronDown className="w-3.5 h-3.5 ml-1" />}
+                    </button>
+                  )}
+                </div>
 
                 {/* Footer details */}
                 <div className="mt-auto pt-5 border-t border-slate-100 flex items-center justify-between">
