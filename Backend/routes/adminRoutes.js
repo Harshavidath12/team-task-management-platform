@@ -1,9 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middleware/authMiddleware');
-const { approveUser, getUsers, updateUserRole, deleteUser } = require('../controllers/adminController');
+const { approveUser, getUsers, updateUserRole, deleteUser, getAnalytics } = require('../controllers/adminController');
 // All admin routes should be protected by authMiddleware
 router.use(authMiddleware);
+
+// GET /api/admin/analytics
+router.get('/analytics', getAnalytics);
 
 // POST /api/admin/approve/:id
 router.post('/approve/:id', approveUser);
@@ -16,4 +19,5 @@ router.put('/users/:id/role', updateUserRole);
 
 // DELETE /api/admin/users/:id
 router.delete('/users/:id', deleteUser);
+
 module.exports = router;
