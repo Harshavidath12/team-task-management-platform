@@ -17,7 +17,8 @@ export default function TMReports() {
 
   // New Report State
   const [projectId, setProjectId] = useState('');
-  const [dateRange, setDateRange] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [tasksCompleted, setTasksCompleted] = useState(['']);
   const [tasksPlanned, setTasksPlanned] = useState(['']);
   const [blockers, setBlockers] = useState('');
@@ -71,7 +72,7 @@ export default function TMReports() {
 
     const payload = {
       project_id: projectId,
-      date_range: dateRange,
+      date_range: `${startDate} - ${endDate}`,
       status,
       tasks_completed: tasksCompleted.filter(t => t.trim() !== ''),
       tasks_planned: tasksPlanned.filter(t => t.trim() !== ''),
@@ -91,7 +92,8 @@ export default function TMReports() {
 
   const resetForm = () => {
     setProjectId('');
-    setDateRange('');
+    setStartDate('');
+    setEndDate('');
     setTasksCompleted(['']);
     setTasksPlanned(['']);
     setBlockers('');
@@ -241,12 +243,12 @@ export default function TMReports() {
               </div>
 
               <div>
-                <h3 className="text-sm font-bold text-blue-600 flex items-center mb-3">
+                <h3 className="text-sm font-bold text-emerald-600 flex items-center mb-3">
                   <Calendar className="w-4 h-4 mr-2" /> Tasks Planned for Next Week
                 </h3>
                 <ul className="space-y-2">
                   {(typeof viewReport.tasks_planned === 'string' ? JSON.parse(viewReport.tasks_planned) : viewReport.tasks_planned)?.map((task, i) => (
-                    <li key={i} className="text-sm text-slate-700 bg-blue-50/50 p-3 rounded-xl border border-blue-100/50">
+                    <li key={i} className="text-sm text-slate-700 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100/50">
                       • {task}
                     </li>
                   )) || <li className="text-sm text-slate-500 italic">No tasks planned.</li>}
@@ -255,19 +257,19 @@ export default function TMReports() {
 
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <h3 className="text-sm font-bold text-amber-600 flex items-center mb-3">
+                  <h3 className="text-sm font-bold text-emerald-600 flex items-center mb-3">
                     <AlertTriangle className="w-4 h-4 mr-2" /> Blockers / Challenges
                   </h3>
-                  <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100/50 text-sm text-slate-700 min-h-[80px]">
+                  <div className="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100/50 text-sm text-slate-700 min-h-[80px]">
                     {viewReport.blockers || <span className="text-slate-400 italic">None reported.</span>}
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-purple-600 flex items-center mb-3">
+                  <h3 className="text-sm font-bold text-emerald-600 flex items-center mb-3">
                     <Clock className="w-4 h-4 mr-2" /> Hours Worked
                   </h3>
-                  <div className="bg-purple-50/50 p-4 rounded-xl border border-purple-100/50 text-xl font-bold text-purple-700">
-                    {viewReport.hours_worked} <span className="text-sm font-medium text-purple-500">hours</span>
+                  <div className="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100/50 text-xl font-bold text-emerald-700">
+                    {viewReport.hours_worked} <span className="text-sm font-medium text-emerald-500">hours</span>
                   </div>
                 </div>
               </div>
@@ -310,16 +312,27 @@ export default function TMReports() {
                     ))}
                   </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-1.5">Date Range *</label>
-                  <input
-                    required
-                    type="text"
-                    value={dateRange}
-                    onChange={e => setDateRange(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium"
-                    placeholder="E.g., Jul 2, 2026 - Jul 10, 2026"
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Week Start Date *</label>
+                    <input
+                      required
+                      type="date"
+                      value={startDate}
+                      onChange={e => setStartDate(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Week End Date *</label>
+                    <input
+                      required
+                      type="date"
+                      value={endDate}
+                      onChange={e => setEndDate(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -358,7 +371,7 @@ export default function TMReports() {
               {/* Tasks Planned */}
               <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
                 <label className="flex items-center text-sm font-bold text-slate-700 mb-3">
-                  <Calendar className="w-4 h-4 mr-2 text-blue-500" /> Tasks Planned for Next Week
+                  <Calendar className="w-4 h-4 mr-2 text-emerald-500" /> Tasks Planned for Next Week
                 </label>
                 <div className="space-y-2">
                   {tasksPlanned.map((task, index) => (
@@ -367,7 +380,7 @@ export default function TMReports() {
                         type="text"
                         value={task}
                         onChange={(e) => handleArrayChange(setTasksPlanned, tasksPlanned, index, e.target.value)}
-                        className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-sm"
+                        className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-sm"
                         placeholder="What's next?"
                       />
                       {tasksPlanned.length > 1 && (
@@ -381,7 +394,7 @@ export default function TMReports() {
                 <button
                   type="button"
                   onClick={() => addArrayItem(setTasksPlanned, tasksPlanned)}
-                  className="mt-3 flex items-center text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors"
+                  className="mt-3 flex items-center text-sm font-bold text-emerald-600 hover:text-emerald-700 transition-colors"
                 >
                   <Plus className="w-4 h-4 mr-1" /> Add another task
                 </button>
@@ -390,7 +403,7 @@ export default function TMReports() {
               {/* Additional Details */}
               <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
                 <label className="flex items-center text-sm font-bold text-slate-700 mb-4">
-                  <AlertCircle className="w-4 h-4 mr-2 text-amber-500" /> Additional Details
+                  <AlertCircle className="w-4 h-4 mr-2 text-emerald-500" /> Additional Details
                 </label>
                 
                 <div className="space-y-4">
@@ -399,7 +412,7 @@ export default function TMReports() {
                     <textarea
                       value={blockers}
                       onChange={e => setBlockers(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all font-medium min-h-[80px] text-sm"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium min-h-[80px] text-sm"
                       placeholder="Any issues preventing progress?"
                     />
                   </div>
@@ -412,7 +425,7 @@ export default function TMReports() {
                       step="0.5"
                       value={hoursWorked}
                       onChange={e => setHoursWorked(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all font-medium text-sm max-w-[200px]"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-sm max-w-[200px]"
                       placeholder="e.g. 40"
                     />
                   </div>
