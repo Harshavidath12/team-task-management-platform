@@ -106,7 +106,7 @@ export default function PMReports() {
 
                 <button 
                   onClick={() => setViewReport(report)}
-                  className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl border-2 border-orange-100 text-orange-500 font-bold text-sm hover:bg-orange-50 hover:border-orange-200 transition-colors shrink-0"
+                  className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl border-2 border-blue-100 text-blue-500 font-bold text-sm hover:bg-blue-50 hover:border-blue-200 transition-colors shrink-0"
                 >
                   <FileText className="w-4 h-4 mr-2" />
                   View
@@ -150,12 +150,12 @@ export default function PMReports() {
 
             <div className="space-y-6">
               <div>
-                <h3 className="text-sm font-bold text-emerald-600 flex items-center mb-3">
+                <h3 className="text-sm font-bold text-blue-600 flex items-center mb-3">
                   <CheckSquare className="w-4 h-4 mr-2" /> Tasks Completed
                 </h3>
                 <ul className="space-y-2">
                   {(typeof viewReport.tasks_completed === 'string' ? JSON.parse(viewReport.tasks_completed) : viewReport.tasks_completed)?.map((task, i) => (
-                    <li key={i} className="text-sm text-slate-700 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100/50">
+                    <li key={i} className="text-sm text-slate-700 bg-blue-50/50 p-3 rounded-xl border border-blue-100/50">
                       • {task}
                     </li>
                   )) || <li className="text-sm text-slate-500 italic">No tasks completed.</li>}
@@ -177,19 +177,19 @@ export default function PMReports() {
 
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <h3 className="text-sm font-bold text-amber-600 flex items-center mb-3">
+                  <h3 className="text-sm font-bold text-blue-600 flex items-center mb-3">
                     <AlertTriangle className="w-4 h-4 mr-2" /> Blockers / Challenges
                   </h3>
-                  <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100/50 text-sm text-slate-700 min-h-[80px]">
+                  <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100/50 text-sm text-slate-700 min-h-[80px]">
                     {viewReport.blockers || <span className="text-slate-400 italic">None reported.</span>}
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-purple-600 flex items-center mb-3">
+                  <h3 className="text-sm font-bold text-blue-600 flex items-center mb-3">
                     <Clock className="w-4 h-4 mr-2" /> Hours Worked
                   </h3>
-                  <div className="bg-purple-50/50 p-4 rounded-xl border border-purple-100/50 text-xl font-bold text-purple-700">
-                    {viewReport.hours_worked} <span className="text-sm font-medium text-purple-500">hours</span>
+                  <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100/50 text-xl font-bold text-blue-700">
+                    {viewReport.hours_worked} <span className="text-sm font-medium text-blue-500">hours</span>
                   </div>
                 </div>
               </div>
