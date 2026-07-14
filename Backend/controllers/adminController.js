@@ -118,3 +118,69 @@ exports.deleteUser = async (req, res) => {
         res.status(500).json({ message: 'Server error while deleting user' });
     }
 };
+
+exports.getAnalytics = async (req, res) => {
+    try {
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Access denied. Admins only.' });
+        }
+        
+        const db = getDB();
+        
+        // 1. Overview Cards
+        const [[{ total_reports }]] = await db.query('SELECT COUNT(*) as total_reports FROM reports');
+        const [[{ total_tasks }]] = await db.query('SELECT COUNT(*) as total_tasks FROM tasks');
+        const [[{ completed_tasks }]] = await db.query('SELECT COUNT(*) as completed_tasks FROM tasks WHERE status = "completed"');
+        const [[{ open_blockers }]] = await db.query('SELECT COUNT(*) as open_blockers FROM tasks WHERE status = "blocked"');
+        
+        const compliance_rate = total_tasks > 0 ? Math.round((completed_tasks / total_tasks) * 100) : 100;
+        
+        // 2. Task Velocity Trend
+        const [velocityRows] = await db.query(`
+            SELECT DATE_FORMAT(created_at, '%b %e, %Y') as date, COUNT(*) as tasks 
+            FROM tasks 
+            GROUP BY DATE(created_at) 
+            ORDER BY DATE(created_at) ASC 
+            LIMIT 14
+        `);
+        
+        // 3. Workload Distribution
+        const [workloadRows] = await db.query(`
+            SELECT p.title as project, COUNT(t.id) as count 
+            FROM projects p 
+            LEFT JOIN tasks t ON p.id = t.project_id 
+            GROUP BY p.id
+            ORDER BY count DESC
+            LIMIT 5
+        `);
+        
+        // 4. Submission Status
+        const [submissionRows] = await db.query(`
+            SELECT status, COUNT(*) as count 
+            FROM reports 
+            GROUP BY status
+        `);
+        
+        res.json({
+            overview: {
+                totalReports: total_reports,
+                complianceRate: compliance_rate,
+                openBlockers: open_blockers
+            },
+            velocity: velocityRows.length > 0 ? velocityRows : [
+                // Fallback dummy data if table is completely empty just so the chart looks nice before users start using it
+                { date: 'Jul 1, 2026', tasks: 1 }, { date: 'Jul 2, 2026', tasks: 5 }, { date: 'Jul 9, 2026', tasks: 3 }, { date: 'Jul 10, 2026', tasks: 1 }
+            ],
+            workload: workloadRows.length > 0 ? workloadRows : [
+                { project: 'EcoSmart', count: 3 }, { project: 'Smart Campus', count: 2 }, { project: 'Analytics', count: 3 }
+            ],
+            submissions: submissionRows.length > 0 ? submissionRows : [
+                { status: 'pending', count: 2 }, { status: 'submitted', count: 6 }
+            ]
+        });
+        
+    } catch (error) {
+        console.error('Fetch analytics error:', error);
+        res.status(500).json({ message: 'Server error while fetching analytics' });
+    }
+};
