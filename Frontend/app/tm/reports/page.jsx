@@ -16,6 +16,7 @@ export default function TMReports() {
   const [viewReport, setViewReport] = useState(null);
 
   // New Report State
+  const [editingReportId, setEditingReportId] = useState(null);
   const [projectId, setProjectId] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -81,13 +82,40 @@ export default function TMReports() {
     };
     
     try {
-      await api.post('/reports', payload);
+      if (editingReportId) {
+        await api.put(`/reports/${editingReportId}`, payload);
+      } else {
+        await api.post('/reports', payload);
+      }
       setIsModalOpen(false);
       resetForm();
       fetchData();
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to save report');
     }
+  };
+
+  const handleEditDraft = (report) => {
+    setViewReport(null);
+    setEditingReportId(report.id);
+    setProjectId(report.project_id);
+    
+    const dates = report.date_range.split(' - ');
+    if (dates.length === 2) {
+      setStartDate(dates[0]);
+      setEndDate(dates[1]);
+    }
+    
+    const tCompleted = typeof report.tasks_completed === 'string' ? JSON.parse(report.tasks_completed) : report.tasks_completed;
+    setTasksCompleted(tCompleted && tCompleted.length > 0 ? tCompleted : ['']);
+    
+    const tPlanned = typeof report.tasks_planned === 'string' ? JSON.parse(report.tasks_planned) : report.tasks_planned;
+    setTasksPlanned(tPlanned && tPlanned.length > 0 ? tPlanned : ['']);
+    
+    setBlockers(report.blockers || '');
+    setHoursWorked(report.hours_worked || '');
+    
+    setIsModalOpen(true);
   };
 
   const resetForm = () => {
@@ -98,6 +126,7 @@ export default function TMReports() {
     setTasksPlanned(['']);
     setBlockers('');
     setHoursWorked('');
+    setEditingReportId(null);
   };
 
   const getStatusBadge = (status) => {
@@ -213,9 +242,19 @@ export default function TMReports() {
                 <X className="w-5 h-5" />
               </button>
 
-              <div className="flex items-center gap-3 pr-12">
-                <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Report Details</h2>
-                {getStatusBadge(viewReport.status)}
+              <div className="flex items-center justify-between pr-12">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Report Details</h2>
+                  {getStatusBadge(viewReport.status)}
+                </div>
+                {viewReport.status === 'Draft' && (
+                  <button
+                    onClick={() => handleEditDraft(viewReport)}
+                    className="inline-flex items-center px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl font-bold text-sm hover:bg-emerald-100 transition-colors"
+                  >
+                    Edit Draft
+                  </button>
+                )}
               </div>
             </div>
 
