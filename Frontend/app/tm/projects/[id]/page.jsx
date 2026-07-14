@@ -16,7 +16,7 @@ export default function TMProjectKanban() {
   
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newTask, setNewTask] = useState({ title: '', description: '', due_date: '' });
+  const [newTask, setNewTask] = useState({ title: '', description: '', due_date: '', status: 'to_do' });
 
   const fetchTasks = async () => {
     try {
@@ -63,7 +63,7 @@ export default function TMProjectKanban() {
     try {
       await api.post('/tasks', { ...newTask, project_id: id });
       setIsModalOpen(false);
-      setNewTask({ title: '', description: '', due_date: '' });
+      setNewTask({ title: '', description: '', due_date: '', status: 'to_do' });
       fetchTasks();
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to create task');
@@ -213,6 +213,20 @@ export default function TMProjectKanban() {
                   className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium min-h-[100px]"
                   placeholder="Task details..."
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1.5">Status</label>
+                <select
+                  value={newTask.status}
+                  onChange={e => setNewTask({...newTask, status: e.target.value})}
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium"
+                >
+                  <option value="to_do">To Do</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="review">In Review</option>
+                  <option value="done">Done</option>
+                </select>
               </div>
 
               <div>
