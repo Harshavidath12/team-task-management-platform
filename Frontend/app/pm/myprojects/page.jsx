@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Folder, Calendar, ArrowRight, AlertCircle, Plus, X, CheckCircle2, ChevronDown, ChevronUp, User } from 'lucide-react';
+import { Folder, Calendar, ArrowRight, AlertCircle, Plus, X, CheckCircle2, ChevronDown, ChevronUp, User, Check } from 'lucide-react';
 import api from '../../../utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -88,6 +88,16 @@ export default function PMDashboard() {
     }
   };
 
+  const handleStatusChange = async (projectId, newStatus) => {
+    try {
+      await api.put(`/projects/${projectId}/status`, { status: newStatus });
+      showToast('Project marked as Done!');
+      fetchData(); // Refresh the list
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to update status', 'error');
+    }
+  };
+
   const toggleMemberSelection = (memberId) => {
     setNewProject(prev => {
       const isSelected = prev.assigned_members.includes(memberId);
@@ -170,12 +180,24 @@ export default function PMDashboard() {
                 key={proj.id}
                 className="group bg-white rounded-3xl border border-slate-200/60 shadow-sm p-6 flex flex-col h-full relative overflow-hidden"
               >
-                {/* Status Badge */}
-                <div className="absolute top-6 right-6">
+                {/* Status Badge and Actions */}
+                <div className="absolute top-6 right-6 flex items-center gap-2">
                   <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${status.bg} ${status.text} border border-black/5`}>
                     <span className={`w-1.5 h-1.5 rounded-full ${status.dot} mr-1.5`}></span>
                     {status.label}
                   </span>
+                  {proj.status !== 'completed' && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleStatusChange(proj.id, 'completed');
+                      }}
+                      className="p-1.5 bg-slate-100 hover:bg-emerald-100 text-slate-400 hover:text-emerald-600 rounded-full transition-colors shadow-sm border border-transparent hover:border-emerald-200"
+                      title="Mark as Done"
+                    >
+                      <Check className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
 
                 {/* Icon */}
