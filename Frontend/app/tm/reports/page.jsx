@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { FileText, AlertCircle, Calendar, Plus, X, CheckCircle2, Save } from 'lucide-react';
+import { FileText, AlertCircle, Calendar, Plus, X, CheckCircle2, Save, CheckSquare, Clock, AlertTriangle } from 'lucide-react';
 import api from '../../../utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -11,9 +11,17 @@ export default function TMReports() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Modal State
+  // Modals State
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newReport, setNewReport] = useState({ project_id: '', date_range: '', content: '' });
+  const [viewReport, setViewReport] = useState(null);
+
+  // New Report State
+  const [projectId, setProjectId] = useState('');
+  const [dateRange, setDateRange] = useState('');
+  const [tasksCompleted, setTasksCompleted] = useState(['']);
+  const [tasksPlanned, setTasksPlanned] = useState(['']);
+  const [blockers, setBlockers] = useState('');
+  const [hoursWorked, setHoursWorked] = useState('');
 
   const fetchData = async () => {
     try {
@@ -35,21 +43,59 @@ export default function TMReports() {
     fetchData();
   }, []);
 
+  const handleArrayChange = (setter, array, index, value) => {
+    const newArray = [...array];
+    newArray[index] = value;
+    setter(newArray);
+  };
+
+  const addArrayItem = (setter, array) => {
+    setter([...array, '']);
+  };
+
+  const removeArrayItem = (setter, array, index) => {
+    const newArray = array.filter((_, i) => i !== index);
+    setter(newArray.length ? newArray : ['']);
+  };
+
   const handleCreateReport = async (e, status) => {
     e.preventDefault();
-    if (!newReport.project_id) {
+    if (!projectId) {
       alert('Please select a project');
       return;
     }
+    if (!hoursWorked) {
+      alert('Hours worked is a required field');
+      return;
+    }
+
+    const payload = {
+      project_id: projectId,
+      date_range: dateRange,
+      status,
+      tasks_completed: tasksCompleted.filter(t => t.trim() !== ''),
+      tasks_planned: tasksPlanned.filter(t => t.trim() !== ''),
+      blockers,
+      hours_worked: hoursWorked
+    };
     
     try {
-      await api.post('/reports', { ...newReport, status });
+      await api.post('/reports', payload);
       setIsModalOpen(false);
-      setNewReport({ project_id: '', date_range: '', content: '' });
+      resetForm();
       fetchData();
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to save report');
     }
+  };
+
+  const resetForm = () => {
+    setProjectId('');
+    setDateRange('');
+    setTasksCompleted(['']);
+    setTasksPlanned(['']);
+    setBlockers('');
+    setHoursWorked('');
   };
 
   const getStatusBadge = (status) => {
@@ -84,7 +130,7 @@ export default function TMReports() {
           <p className="text-sm text-slate-500 font-medium mt-1">Submit your progress reports to project managers.</p>
         </div>
         <button 
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => { resetForm(); setIsModalOpen(true); }}
           className="flex items-center px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold transition-all shadow-sm"
         >
           <Plus className="w-5 h-5 mr-1.5" />
@@ -137,7 +183,7 @@ export default function TMReports() {
                 </div>
 
                 <button 
-                  onClick={() => alert(`Viewing report: ${report.id} \n\n${report.content}`)}
+                  onClick={() => setViewReport(report)}
                   className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl border-2 border-emerald-100 text-emerald-600 font-bold text-sm hover:bg-emerald-50 hover:border-emerald-200 transition-colors shrink-0"
                 >
                   <FileText className="w-4 h-4 mr-2" />
@@ -149,13 +195,94 @@ export default function TMReports() {
         </div>
       )}
 
+      {/* View Report Modal */}
+      {viewReport && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-3xl p-8 w-full max-w-3xl shadow-2xl relative max-h-[90vh] overflow-y-auto"
+          >
+            <button 
+              onClick={() => setViewReport(null)}
+              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-slate-400 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-6">
+              <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Report Details</h2>
+              {getStatusBadge(viewReport.status)}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Project</p>
+                <p className="text-sm font-semibold text-slate-800">{viewReport.project_title}</p>
+              </div>
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Date Range</p>
+                <p className="text-sm font-semibold text-slate-800">{viewReport.date_range}</p>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-sm font-bold text-emerald-600 flex items-center mb-3">
+                  <CheckSquare className="w-4 h-4 mr-2" /> Tasks Completed
+                </h3>
+                <ul className="space-y-2">
+                  {(typeof viewReport.tasks_completed === 'string' ? JSON.parse(viewReport.tasks_completed) : viewReport.tasks_completed)?.map((task, i) => (
+                    <li key={i} className="text-sm text-slate-700 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100/50">
+                      • {task}
+                    </li>
+                  )) || <li className="text-sm text-slate-500 italic">No tasks completed.</li>}
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold text-blue-600 flex items-center mb-3">
+                  <Calendar className="w-4 h-4 mr-2" /> Tasks Planned for Next Week
+                </h3>
+                <ul className="space-y-2">
+                  {(typeof viewReport.tasks_planned === 'string' ? JSON.parse(viewReport.tasks_planned) : viewReport.tasks_planned)?.map((task, i) => (
+                    <li key={i} className="text-sm text-slate-700 bg-blue-50/50 p-3 rounded-xl border border-blue-100/50">
+                      • {task}
+                    </li>
+                  )) || <li className="text-sm text-slate-500 italic">No tasks planned.</li>}
+                </ul>
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-sm font-bold text-amber-600 flex items-center mb-3">
+                    <AlertTriangle className="w-4 h-4 mr-2" /> Blockers / Challenges
+                  </h3>
+                  <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100/50 text-sm text-slate-700 min-h-[80px]">
+                    {viewReport.blockers || <span className="text-slate-400 italic">None reported.</span>}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-purple-600 flex items-center mb-3">
+                    <Clock className="w-4 h-4 mr-2" /> Hours Worked
+                  </h3>
+                  <div className="bg-purple-50/50 p-4 rounded-xl border border-purple-100/50 text-xl font-bold text-purple-700">
+                    {viewReport.hours_worked} <span className="text-sm font-medium text-purple-500">hours</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       {/* New Report Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-3xl p-8 w-full max-w-lg shadow-2xl relative"
+            className="bg-white rounded-3xl p-8 w-full max-w-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto"
           >
             <button 
               onClick={() => setIsModalOpen(false)}
@@ -166,45 +293,133 @@ export default function TMReports() {
 
             <h2 className="text-2xl font-bold text-slate-800 mb-6 tracking-tight">Create New Report</h2>
             
-            <form className="space-y-4">
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1.5">Project *</label>
-                <select
-                  required
-                  value={newReport.project_id}
-                  onChange={e => setNewReport({...newReport, project_id: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-slate-700"
-                >
-                  <option value="">Select a project...</option>
-                  {projects.map(p => (
-                    <option key={p.id} value={p.id}>{p.title}</option>
+            <form className="space-y-6">
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1.5">Project *</label>
+                  <select
+                    required
+                    value={projectId}
+                    onChange={e => setProjectId(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-slate-700"
+                  >
+                    <option value="">Select a project...</option>
+                    {projects.map(p => (
+                      <option key={p.id} value={p.id}>{p.title}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1.5">Date Range *</label>
+                  <input
+                    required
+                    type="text"
+                    value={dateRange}
+                    onChange={e => setDateRange(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium"
+                    placeholder="E.g., Jul 2, 2026 - Jul 10, 2026"
+                  />
+                </div>
+              </div>
+
+              {/* Tasks Completed */}
+              <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                <label className="flex items-center text-sm font-bold text-slate-700 mb-3">
+                  <CheckSquare className="w-4 h-4 mr-2 text-emerald-500" /> Tasks Completed
+                </label>
+                <div className="space-y-2">
+                  {tasksCompleted.map((task, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={task}
+                        onChange={(e) => handleArrayChange(setTasksCompleted, tasksCompleted, index, e.target.value)}
+                        className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-sm"
+                        placeholder="What did you finish?"
+                      />
+                      {tasksCompleted.length > 1 && (
+                        <button type="button" onClick={() => removeArrayItem(setTasksCompleted, tasksCompleted, index)} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
                   ))}
-                </select>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => addArrayItem(setTasksCompleted, tasksCompleted)}
+                  className="mt-3 flex items-center text-sm font-bold text-emerald-600 hover:text-emerald-700 transition-colors"
+                >
+                  <Plus className="w-4 h-4 mr-1" /> Add another task
+                </button>
               </div>
 
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1.5">Date Range *</label>
-                <input
-                  required
-                  type="text"
-                  value={newReport.date_range}
-                  onChange={e => setNewReport({...newReport, date_range: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium"
-                  placeholder="E.g., Jul 2, 2026 - Jul 10, 2026"
-                />
+              {/* Tasks Planned */}
+              <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                <label className="flex items-center text-sm font-bold text-slate-700 mb-3">
+                  <Calendar className="w-4 h-4 mr-2 text-blue-500" /> Tasks Planned for Next Week
+                </label>
+                <div className="space-y-2">
+                  {tasksPlanned.map((task, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={task}
+                        onChange={(e) => handleArrayChange(setTasksPlanned, tasksPlanned, index, e.target.value)}
+                        className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-sm"
+                        placeholder="What's next?"
+                      />
+                      {tasksPlanned.length > 1 && (
+                        <button type="button" onClick={() => removeArrayItem(setTasksPlanned, tasksPlanned, index)} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => addArrayItem(setTasksPlanned, tasksPlanned)}
+                  className="mt-3 flex items-center text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors"
+                >
+                  <Plus className="w-4 h-4 mr-1" /> Add another task
+                </button>
               </div>
 
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1.5">Content</label>
-                <textarea
-                  value={newReport.content}
-                  onChange={e => setNewReport({...newReport, content: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium min-h-[150px]"
-                  placeholder="What did you accomplish this week?"
-                />
+              {/* Additional Details */}
+              <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                <label className="flex items-center text-sm font-bold text-slate-700 mb-4">
+                  <AlertCircle className="w-4 h-4 mr-2 text-amber-500" /> Additional Details
+                </label>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Blockers / Challenges (Optional)</label>
+                    <textarea
+                      value={blockers}
+                      onChange={e => setBlockers(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all font-medium min-h-[80px] text-sm"
+                      placeholder="Any issues preventing progress?"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Hours Worked *</label>
+                    <input
+                      required
+                      type="number"
+                      min="0"
+                      step="0.5"
+                      value={hoursWorked}
+                      onChange={e => setHoursWorked(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all font-medium text-sm max-w-[200px]"
+                      placeholder="e.g. 40"
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div className="flex gap-4 pt-4">
+              <div className="flex gap-4 pt-4 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={(e) => handleCreateReport(e, 'Draft')}
