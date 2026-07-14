@@ -39,16 +39,19 @@ exports.createReport = async (req, res) => {
             return res.status(403).json({ message: 'Only team members can submit reports' });
         }
 
-        const { project_id, date_range, status, content } = req.body;
+        const { project_id, date_range, status, tasks_completed, tasks_planned, blockers, hours_worked } = req.body;
         
-        if (!project_id || !date_range) {
-            return res.status(400).json({ message: 'Missing required fields' });
+        if (!project_id || !date_range || hours_worked === undefined || hours_worked === null) {
+            return res.status(400).json({ message: 'Missing required fields. Hours worked is required.' });
         }
 
         const db = getDB();
+        const completedJson = tasks_completed ? JSON.stringify(tasks_completed) : '[]';
+        const plannedJson = tasks_planned ? JSON.stringify(tasks_planned) : '[]';
+
         const [result] = await db.query(
-            'INSERT INTO reports (project_id, user_id, date_range, status, content) VALUES (?, ?, ?, ?, ?)',
-            [project_id, req.user.id, date_range, status || 'Draft', content || '']
+            'INSERT INTO reports (project_id, user_id, date_range, status, tasks_completed, tasks_planned, blockers, hours_worked) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [project_id, req.user.id, date_range, status || 'Draft', completedJson, plannedJson, blockers || '', parseInt(hours_worked) || 0]
         );
 
         res.status(201).json({ message: 'Report created successfully', reportId: result.insertId });
