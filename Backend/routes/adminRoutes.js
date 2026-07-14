@@ -1,9 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middleware/authMiddleware');
-const { approveUser, getUsers, updateUserRole, deleteUser, getAnalytics } = require('../controllers/adminController');
+const { approveUser, getUsers, updateUserRole, deleteUser, getAnalytics, getAnalyticsFilters } = require('../controllers/adminController');
 // All admin routes should be protected by authMiddleware
 router.use(authMiddleware);
+
+// GET /api/admin/analytics/filters
+router.get('/analytics/filters', getAnalyticsFilters);
 
 // GET /api/admin/analytics
 router.get('/analytics', getAnalytics);

@@ -4,18 +4,34 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import api from '@/utils/api';
-import { FileText, CheckCircle, AlertCircle, BarChart2 } from 'lucide-react';
+import { FileText, CheckCircle, AlertCircle, BarChart2, Filter } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function AnalyticsPage() {
   const router = useRouter();
   const [data, setData] = useState(null);
+  const [filtersData, setFiltersData] = useState({ users: [], projects: [] });
   const [loading, setLoading] = useState(true);
+  
+  const [filters, setFilters] = useState({
+    user_id: 'all',
+    project_id: 'all',
+    status: 'all',
+    start_date: '',
+    end_date: ''
+  });
 
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-        const res = await api.get('/admin/analytics');
+        const queryParams = new URLSearchParams();
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value && value !== 'all') {
+            queryParams.append(key, value);
+          }
+        });
+        
+        const res = await api.get(`/admin/analytics?${queryParams.toString()}`);
         setData(res.data);
       } catch (err) {
         console.error("Failed to fetch analytics:", err);
@@ -24,6 +40,18 @@ export default function AnalyticsPage() {
       }
     };
     fetchAnalytics();
+  }, [filters]);
+
+  useEffect(() => {
+    const fetchFilters = async () => {
+      try {
+        const res = await api.get('/admin/analytics/filters');
+        setFiltersData(res.data);
+      } catch (err) {
+        console.error("Failed to fetch filters:", err);
+      }
+    };
+    fetchFilters();
   }, []);
 
   if (loading || !data) {
@@ -52,15 +80,54 @@ export default function AnalyticsPage() {
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
       {/* Header section */}
-      <div className="flex flex-col md:flex-row gap-6 bg-white p-6 rounded-2xl shadow-sm border border-slate-100 items-start md:items-center">
-        <div className="flex flex-col items-center justify-center bg-blue-50 p-6 rounded-xl min-w-[200px]">
-          <BarChart2 className="w-10 h-10 text-primary mb-2" />
-          <h2 className="text-lg font-bold text-slate-800">TeamReports</h2>
+      <div className="flex flex-col xl:flex-row gap-6 bg-white p-6 rounded-2xl shadow-sm border border-slate-100 items-start xl:items-center justify-between">
+        <div className="flex gap-4 items-center flex-col md:flex-row">
+            <div className="flex flex-col items-center justify-center bg-blue-50 p-6 rounded-xl min-w-[200px]">
+              <BarChart2 className="w-10 h-10 text-primary mb-2" />
+              <h2 className="text-lg font-bold text-slate-800">TeamReports</h2>
+            </div>
+            
+            <div className="space-y-2">
+              <h1 className="text-2xl font-bold text-slate-800">Team Overview</h1>
+              <p className="text-slate-500 text-sm">Monitor team progress, workload distribution, and weekly reports.</p>
+            </div>
         </div>
-        
-        <div className="flex-1 space-y-2">
-          <h1 className="text-2xl font-bold text-slate-800">Team Overview</h1>
-          <p className="text-slate-500 text-sm">Monitor team progress, workload distribution, and weekly reports.</p>
+
+        {/* Filters */}
+        <div className="flex items-center gap-3 self-start xl:self-center flex-wrap">
+          <div className="flex items-center text-slate-400 gap-1 text-sm mr-2 font-medium">
+             <Filter className="w-4 h-4" /> FILTERS
+          </div>
+          <select 
+            value={filters.user_id} 
+            onChange={(e) => setFilters({...filters, user_id: e.target.value})}
+            className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-600 focus:outline-none focus:border-primary shadow-sm"
+          >
+            <option value="all">All Members</option>
+            {filtersData.users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+          </select>
+          <select 
+            value={filters.project_id} 
+            onChange={(e) => setFilters({...filters, project_id: e.target.value})}
+            className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-600 focus:outline-none focus:border-primary shadow-sm"
+          >
+            <option value="all">All Projects</option>
+            {filtersData.projects.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
+          </select>
+          <select 
+            value={filters.status} 
+            onChange={(e) => setFilters({...filters, status: e.target.value})}
+            className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-600 focus:outline-none focus:border-primary shadow-sm"
+          >
+            <option value="all">All Statuses</option>
+            <option value="to_do">To Do</option>
+            <option value="in_progress">In Progress</option>
+            <option value="review">Review</option>
+            <option value="done">Done</option>
+            <option value="blocked">Blocked</option>
+            <option value="Draft">Draft (Report)</option>
+            <option value="Submitted">Submitted (Report)</option>
+          </select>
         </div>
       </div>
 
@@ -99,7 +166,24 @@ export default function AnalyticsPage() {
 
       {/* Task Velocity Trend */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-        <h3 className="text-lg font-bold text-slate-800 mb-6">Task Velocity Trend</h3>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+            <h3 className="text-lg font-bold text-slate-800">Task Velocity Trend</h3>
+            <div className="flex items-center gap-2">
+              <input 
+                type="date" 
+                value={filters.start_date} 
+                onChange={(e) => setFilters({...filters, start_date: e.target.value})} 
+                className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-600 focus:outline-none focus:border-primary shadow-sm" 
+              />
+              <span className="text-slate-400 text-sm font-medium">to</span>
+              <input 
+                type="date" 
+                value={filters.end_date} 
+                onChange={(e) => setFilters({...filters, end_date: e.target.value})} 
+                className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-600 focus:outline-none focus:border-primary shadow-sm" 
+              />
+            </div>
+        </div>
         <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={velocity} margin={{ top: 5, right: 20, bottom: 5, left: -20 }}>
