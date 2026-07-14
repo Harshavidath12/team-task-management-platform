@@ -111,6 +111,18 @@ const initDB = async () => {
         `;
         await pool.query(createReportsTableQuery);
 
+        // Safely add new structured report columns if they don't exist
+        try {
+            await pool.query('ALTER TABLE reports ADD COLUMN tasks_completed JSON;');
+            await pool.query('ALTER TABLE reports ADD COLUMN tasks_planned JSON;');
+            await pool.query('ALTER TABLE reports ADD COLUMN blockers TEXT;');
+            await pool.query('ALTER TABLE reports ADD COLUMN hours_worked INT NOT NULL DEFAULT 0;');
+        } catch (err) {
+            if (err.code !== 'ER_DUP_FIELDNAME') {
+                console.warn('Could not alter reports table:', err.message);
+            }
+        }
+
         // Seed Default Admin Account
         const adminEmail = 'admin123@gmail.com';
         const adminPass = 'Admin@123';

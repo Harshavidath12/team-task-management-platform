@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { FileText, AlertCircle, Calendar } from 'lucide-react';
+import { FileText, AlertCircle, Calendar, X, CheckSquare, Clock, AlertTriangle } from 'lucide-react';
 import api from '../../../utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -9,6 +9,9 @@ export default function PMReports() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  
+  // Modal State
+  const [viewReport, setViewReport] = useState(null);
 
   const fetchReports = async () => {
     try {
@@ -102,8 +105,8 @@ export default function PMReports() {
                 </div>
 
                 <button 
-                  onClick={() => alert(`Viewing report: ${report.id} \n\n${report.content}`)}
-                  className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl border-2 border-orange-100 text-orange-500 font-bold text-sm hover:bg-orange-50 hover:border-orange-200 transition-colors shrink-0"
+                  onClick={() => setViewReport(report)}
+                  className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl border-2 border-blue-100 text-blue-500 font-bold text-sm hover:bg-blue-50 hover:border-blue-200 transition-colors shrink-0"
                 >
                   <FileText className="w-4 h-4 mr-2" />
                   View
@@ -111,6 +114,87 @@ export default function PMReports() {
               </motion.div>
             ))}
           </AnimatePresence>
+        </div>
+      )}
+
+      {/* View Report Modal */}
+      {viewReport && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-3xl p-8 w-full max-w-3xl shadow-2xl relative max-h-[90vh] overflow-y-auto"
+          >
+            <button 
+              onClick={() => setViewReport(null)}
+              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-slate-400 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-6">
+              <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Report Details</h2>
+              {getStatusBadge(viewReport.status)}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Project</p>
+                <p className="text-sm font-semibold text-slate-800">{viewReport.project_title}</p>
+              </div>
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Team Member</p>
+                <p className="text-sm font-semibold text-slate-800">{viewReport.submitter_name}</p>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-sm font-bold text-blue-600 flex items-center mb-3">
+                  <CheckSquare className="w-4 h-4 mr-2" /> Tasks Completed
+                </h3>
+                <ul className="space-y-2">
+                  {(typeof viewReport.tasks_completed === 'string' ? JSON.parse(viewReport.tasks_completed) : viewReport.tasks_completed)?.map((task, i) => (
+                    <li key={i} className="text-sm text-slate-700 bg-blue-50/50 p-3 rounded-xl border border-blue-100/50">
+                      • {task}
+                    </li>
+                  )) || <li className="text-sm text-slate-500 italic">No tasks completed.</li>}
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold text-blue-600 flex items-center mb-3">
+                  <Calendar className="w-4 h-4 mr-2" /> Tasks Planned for Next Week
+                </h3>
+                <ul className="space-y-2">
+                  {(typeof viewReport.tasks_planned === 'string' ? JSON.parse(viewReport.tasks_planned) : viewReport.tasks_planned)?.map((task, i) => (
+                    <li key={i} className="text-sm text-slate-700 bg-blue-50/50 p-3 rounded-xl border border-blue-100/50">
+                      • {task}
+                    </li>
+                  )) || <li className="text-sm text-slate-500 italic">No tasks planned.</li>}
+                </ul>
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-sm font-bold text-blue-600 flex items-center mb-3">
+                    <AlertTriangle className="w-4 h-4 mr-2" /> Blockers / Challenges
+                  </h3>
+                  <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100/50 text-sm text-slate-700 min-h-[80px]">
+                    {viewReport.blockers || <span className="text-slate-400 italic">None reported.</span>}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-blue-600 flex items-center mb-3">
+                    <Clock className="w-4 h-4 mr-2" /> Hours Worked
+                  </h3>
+                  <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100/50 text-xl font-bold text-blue-700">
+                    {viewReport.hours_worked} <span className="text-sm font-medium text-blue-500">hours</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       )}
     </div>

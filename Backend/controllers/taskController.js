@@ -33,11 +33,14 @@ exports.createTask = async (req, res) => {
             return res.status(403).json({ message: 'Access denied. Only Team Members can create tasks.' });
         }
 
-        const { project_id, title, description, assigned_to, due_date } = req.body;
+        const { project_id, title, description, assigned_to, due_date, status } = req.body;
 
         if (!project_id || !title) {
             return res.status(400).json({ message: 'Project ID and title are required' });
         }
+
+        const validStatuses = ['to_do', 'in_progress', 'review', 'done'];
+        const taskStatus = (status && validStatuses.includes(status)) ? status : 'to_do';
 
         const db = getDB();
         
@@ -57,8 +60,8 @@ exports.createTask = async (req, res) => {
         }
 
         const [result] = await db.query(
-            'INSERT INTO tasks (project_id, title, description, assigned_to, created_by, due_date) VALUES (?, ?, ?, ?, ?, ?)',
-            [project_id, title, description || '', assigned_to || null, req.user.id, due_date || null]
+            'INSERT INTO tasks (project_id, title, description, assigned_to, created_by, due_date, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [project_id, title, description || '', assigned_to || null, req.user.id, due_date || null, taskStatus]
         );
 
         res.status(201).json({ message: 'Task created successfully', taskId: result.insertId });
