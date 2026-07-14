@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { FileText, AlertCircle, Calendar, Plus, X, CheckCircle2, Save, CheckSquare, Clock, AlertTriangle } from 'lucide-react';
+import { FileText, AlertCircle, Calendar, Plus, X, CheckCircle2, Save, CheckSquare, Clock, AlertTriangle, Folder } from 'lucide-react';
 import api from '../../../utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -284,22 +284,60 @@ export default function TMReports() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-3xl p-8 w-full max-w-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto"
+            className="bg-slate-50 rounded-3xl p-8 w-full max-w-3xl shadow-2xl relative max-h-[90vh] overflow-y-auto"
           >
             <button 
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-slate-400 transition-colors"
+              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-200 text-slate-400 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <h2 className="text-2xl font-bold text-slate-800 mb-6 tracking-tight">Create New Report</h2>
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-slate-800 tracking-tight flex items-center">
+                <FileText className="w-6 h-6 mr-3 text-orange-500" /> Draft New Report
+              </h2>
+              <p className="text-sm text-slate-500 font-medium mt-2">Fill out the details below to log your progress.</p>
+            </div>
             
             <form className="space-y-6">
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                <h3 className="flex items-center text-sm font-bold text-slate-800 mb-6">
+                  <Folder className="w-4 h-4 mr-2 text-orange-500" /> General Details
+                </h3>
+                
+                <div className="grid grid-cols-2 gap-6 mb-6">
+                  <div>
+                    <label className="flex items-center text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">
+                      <Calendar className="w-3.5 h-3.5 mr-1.5" /> Week Start Date
+                    </label>
+                    <input
+                      required
+                      type="date"
+                      value={startDate}
+                      onChange={e => setStartDate(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-slate-700"
+                    />
+                  </div>
+                  <div>
+                    <label className="flex items-center text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">
+                      <Calendar className="w-3.5 h-3.5 mr-1.5" /> Week End Date
+                    </label>
+                    <input
+                      required
+                      type="date"
+                      value={endDate}
+                      onChange={e => setEndDate(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-slate-700"
+                    />
+                  </div>
+                </div>
+
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-1.5">Project *</label>
+                  <label className="flex items-center text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">
+                    <Folder className="w-3.5 h-3.5 mr-1.5" /> Project or Category Tag
+                  </label>
                   <select
                     required
                     value={projectId}
@@ -312,32 +350,10 @@ export default function TMReports() {
                     ))}
                   </select>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Week Start Date *</label>
-                    <input
-                      required
-                      type="date"
-                      value={startDate}
-                      onChange={e => setStartDate(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Week End Date *</label>
-                    <input
-                      required
-                      type="date"
-                      value={endDate}
-                      onChange={e => setEndDate(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium"
-                    />
-                  </div>
-                </div>
               </div>
 
               {/* Tasks Completed */}
-              <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
                 <label className="flex items-center text-sm font-bold text-slate-700 mb-3">
                   <CheckSquare className="w-4 h-4 mr-2 text-emerald-500" /> Tasks Completed
                 </label>
@@ -369,7 +385,7 @@ export default function TMReports() {
               </div>
 
               {/* Tasks Planned */}
-              <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
                 <label className="flex items-center text-sm font-bold text-slate-700 mb-3">
                   <Calendar className="w-4 h-4 mr-2 text-emerald-500" /> Tasks Planned for Next Week
                 </label>
@@ -401,7 +417,7 @@ export default function TMReports() {
               </div>
 
               {/* Additional Details */}
-              <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
                 <label className="flex items-center text-sm font-bold text-slate-700 mb-4">
                   <AlertCircle className="w-4 h-4 mr-2 text-emerald-500" /> Additional Details
                 </label>
