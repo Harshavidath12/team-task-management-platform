@@ -10,6 +10,9 @@ exports.getProjects = async (req, res) => {
         if (req.user.role === 'project_manager') {
             query = 'SELECT * FROM projects WHERE manager_id = ? ORDER BY created_at DESC';
             queryParams = [req.user.id];
+        } else if (req.user.role === 'team_member') {
+            query = 'SELECT * FROM projects WHERE JSON_CONTAINS(assigned_members, ?) ORDER BY created_at DESC';
+            queryParams = [String(req.user.id)];
         }
 
         const [projects] = await db.query(query, queryParams);
