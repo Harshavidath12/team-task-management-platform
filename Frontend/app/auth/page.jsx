@@ -50,6 +50,12 @@ function AuthContent() {
     setError('');
     
     if (!isLogin) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.(com|net|org|edu|gov|io|co)$/i;
+      if (!emailRegex.test(formData.email)) {
+        setError('Please enter a valid email address (e.g., ending in .com).');
+        return;
+      }
+
       const isValidPassword = 
         formData.password.length >= 6 &&
         /[A-Z]/.test(formData.password) &&
@@ -71,14 +77,18 @@ function AuthContent() {
         });
         setMessage(res.data.message);
         
-        localStorage.setItem('token', res.data.token);
-        localStorage.setItem('user', JSON.stringify(res.data.user));
+        // Store token and user data
+        const { token, user } = res.data;
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
         
         // Redirect based on role
-        if (res.data.user.role === 'admin') {
+        if (user.role === 'admin') {
           router.push('/admin/dashboard');
+        } else if (user.role === 'project_manager') {
+          router.push('/pm/myprojects');
         } else {
-          router.push('/dashboard');
+          router.push('/tm/projects');
         }
       } else {
         const res = await axios.post('http://localhost:5000/api/auth/register', formData);
@@ -210,7 +220,7 @@ function AuthContent() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-primary transition-colors"
               >
-                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                {showPassword ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
               </button>
             </div>
 

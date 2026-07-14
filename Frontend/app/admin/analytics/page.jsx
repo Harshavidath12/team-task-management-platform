@@ -45,8 +45,8 @@ export default function AnalyticsPage() {
   };
 
   const PIE_COLORS = {
-    pending: COLORS.dark,
-    submitted: COLORS.primary
+    Draft: COLORS.dark,
+    Submitted: COLORS.primary
   };
 
   return (
@@ -172,7 +172,7 @@ export default function AnalyticsPage() {
           <div className="flex justify-center gap-6 mt-2">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-slate-900"></div>
-              <span className="text-sm text-slate-600 font-medium">Pending</span>
+              <span className="text-sm text-slate-600 font-medium">Draft</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-primary"></div>

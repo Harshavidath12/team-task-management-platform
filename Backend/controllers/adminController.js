@@ -64,8 +64,8 @@ exports.approveUser = async (req, res) => {
 
 exports.getUsers = async (req, res) => {
     try {
-        if (req.user.role !== 'admin') {
-            return res.status(403).json({ message: 'Access denied. Admins only.' });
+        if (req.user.role !== 'admin' && req.user.role !== 'project_manager') {
+            return res.status(403).json({ message: 'Access denied. Admins and Project Managers only.' });
         }
         
         const db = getDB();
@@ -130,7 +130,7 @@ exports.getAnalytics = async (req, res) => {
         // 1. Overview Cards
         const [[{ total_reports }]] = await db.query('SELECT COUNT(*) as total_reports FROM reports');
         const [[{ total_tasks }]] = await db.query('SELECT COUNT(*) as total_tasks FROM tasks');
-        const [[{ completed_tasks }]] = await db.query('SELECT COUNT(*) as completed_tasks FROM tasks WHERE status = "completed"');
+        const [[{ completed_tasks }]] = await db.query('SELECT COUNT(*) as completed_tasks FROM tasks WHERE status = "done"');
         const [[{ open_blockers }]] = await db.query('SELECT COUNT(*) as open_blockers FROM tasks WHERE status = "blocked"');
         
         const compliance_rate = total_tasks > 0 ? Math.round((completed_tasks / total_tasks) * 100) : 100;
@@ -175,7 +175,7 @@ exports.getAnalytics = async (req, res) => {
                 { project: 'EcoSmart', count: 3 }, { project: 'Smart Campus', count: 2 }, { project: 'Analytics', count: 3 }
             ],
             submissions: submissionRows.length > 0 ? submissionRows : [
-                { status: 'pending', count: 2 }, { status: 'submitted', count: 6 }
+                { status: 'Draft', count: 2 }, { status: 'Submitted', count: 6 }
             ]
         });
         
