@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { LayoutDashboard, LogOut, Briefcase, FileText } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { LayoutDashboard, LogOut, Briefcase, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 
 export default function PMLayout({ children }) {
@@ -11,6 +11,7 @@ export default function PMLayout({ children }) {
   const pathname = usePathname();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -50,16 +51,33 @@ export default function PMLayout({ children }) {
     <div className="flex h-screen bg-slate-50 font-sans overflow-hidden">
       
       {/* Sidebar */}
-      <div className="w-72 bg-white shadow-xl shadow-slate-200/50 flex flex-col z-20 border-r border-slate-100">
+      <motion.div 
+        animate={{ width: isCollapsed ? 80 : 288 }}
+        transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+        className="bg-white shadow-xl shadow-slate-200/50 flex flex-col z-20 border-r border-slate-100 relative"
+      >
+        {/* Collapse Toggle */}
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="absolute -right-4 top-6 bg-white border border-slate-200 text-slate-500 hover:text-primary hover:border-blue-200 hover:bg-blue-50 rounded-full p-1.5 shadow-md transition-all z-30"
+        >
+          {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+        </button>
         
         {/* Brand */}
-        <div className="h-20 flex items-center px-8 border-b border-slate-100">
-          <div className="bg-primary/10 p-2 rounded-xl mr-3">
+        <div className="h-20 flex items-center px-6 border-b border-slate-100 overflow-hidden whitespace-nowrap">
+          <div className="bg-primary/10 p-2 rounded-xl shrink-0">
             <Briefcase className="w-6 h-6 text-primary" />
           </div>
-          <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-slate-600 tracking-tight">
-            PM Portal
-          </span>
+          {!isCollapsed && (
+            <motion.span 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }}
+              className="ml-3 text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-slate-600 tracking-tight"
+            >
+              PM Portal
+            </motion.span>
+          )}
         </div>
 
         {/* Navigation */}
@@ -70,7 +88,7 @@ export default function PMLayout({ children }) {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`w-full flex items-center relative group px-4 py-3 rounded-2xl transition-all duration-300 ${
+                className={`w-full flex items-center relative group ${isCollapsed ? 'justify-center px-0' : 'px-4'} py-3 rounded-2xl transition-all duration-300 ${
                   isActive 
                     ? 'text-primary bg-blue-50/50 font-bold' 
                     : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50 font-medium'
@@ -84,8 +102,18 @@ export default function PMLayout({ children }) {
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   />
                 )}
-                <item.icon className={`w-5 h-5 mr-3.5 relative z-10 transition-colors duration-300 ${isActive ? 'text-primary' : 'text-slate-400 group-hover:text-slate-600'}`} />
-                <span className="relative z-10 tracking-wide text-[14px]">{item.name}</span>
+                <div className="relative z-10 flex items-center w-full">
+                  <item.icon className={`w-5 h-5 shrink-0 transition-colors duration-300 ${isActive ? 'text-primary' : 'text-slate-400 group-hover:text-slate-600'} ${!isCollapsed ? 'mr-3.5' : 'mx-auto'}`} />
+                  {!isCollapsed && (
+                    <motion.span 
+                      initial={{ opacity: 0 }} 
+                      animate={{ opacity: 1 }}
+                      className="tracking-wide text-[14px] whitespace-nowrap"
+                    >
+                      {item.name}
+                    </motion.span>
+                  )}
+                </div>
               </Link>
             );
           })}
@@ -93,24 +121,26 @@ export default function PMLayout({ children }) {
 
         {/* User Profile Area */}
         <div className="p-4 border-t border-slate-100 bg-slate-50/50">
-          <div className="flex items-center bg-white p-3 rounded-2xl border border-slate-100 shadow-sm">
-            <div className="w-10 h-10 rounded-xl bg-blue-100 text-primary flex items-center justify-center font-bold text-lg shadow-inner">
+          <div className={`flex items-center ${isCollapsed ? 'justify-center bg-transparent border-transparent shadow-none p-0' : 'bg-white p-3 rounded-2xl border border-slate-100 shadow-sm'} transition-all`}>
+            <div className="w-10 h-10 rounded-xl bg-blue-100 text-primary flex items-center justify-center font-bold text-lg shadow-inner shrink-0">
               {user?.name?.charAt(0).toUpperCase()}
             </div>
-            <div className="ml-3 flex-1 min-w-0">
-              <p className="text-sm font-bold text-slate-800 truncate">{user?.name}</p>
-              <p className="text-xs text-slate-400 font-medium truncate capitalize">Project Manager</p>
-            </div>
+            {!isCollapsed && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="ml-3 flex-1 min-w-0">
+                <p className="text-sm font-bold text-slate-800 truncate">{user?.name}</p>
+                <p className="text-xs text-slate-400 font-medium truncate capitalize">Project Manager</p>
+              </motion.div>
+            )}
           </div>
           <button
             onClick={handleLogout}
-            className="w-full mt-3 flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200"
+            className={`w-full mt-3 flex items-center justify-center ${isCollapsed ? 'px-0' : 'px-4'} py-2.5 text-sm font-semibold text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200`}
           >
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
+            <LogOut className={`w-4 h-4 ${!isCollapsed ? 'mr-2' : ''}`} />
+            {!isCollapsed && <span>Sign Out</span>}
           </button>
         </div>
-      </div>
+      </motion.div>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
