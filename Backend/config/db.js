@@ -83,7 +83,7 @@ const initDB = async () => {
                 project_id INT NOT NULL,
                 title VARCHAR(255) NOT NULL,
                 description TEXT,
-                status ENUM('to_do', 'in_progress', 'review', 'done') DEFAULT 'to_do',
+                status ENUM('to_do', 'in_progress', 'review', 'done', 'blocked') DEFAULT 'to_do',
                 assigned_to INT,
                 created_by INT NOT NULL,
                 due_date DATE,
