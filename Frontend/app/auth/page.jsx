@@ -77,8 +77,10 @@ function AuthContent() {
         // Redirect based on role
         if (res.data.user.role === 'admin') {
           router.push('/admin/dashboard');
+        } else if (res.data.user.role === 'project_manager') {
+          router.push('/pm/myprojects');
         } else {
-          router.push('/dashboard');
+          router.push('/tm/dashboard');
         }
       } else {
         const res = await axios.post('http://localhost:5000/api/auth/register', formData);

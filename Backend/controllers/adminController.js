@@ -64,8 +64,8 @@ exports.approveUser = async (req, res) => {
 
 exports.getUsers = async (req, res) => {
     try {
-        if (req.user.role !== 'admin') {
-            return res.status(403).json({ message: 'Access denied. Admins only.' });
+        if (req.user.role !== 'admin' && req.user.role !== 'project_manager') {
+            return res.status(403).json({ message: 'Access denied. Admins and Project Managers only.' });
         }
         
         const db = getDB();

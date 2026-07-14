@@ -4,7 +4,15 @@ const { getDB } = require('../config/db');
 exports.getProjects = async (req, res) => {
     try {
         const db = getDB();
-        const [projects] = await db.query('SELECT * FROM projects ORDER BY created_at DESC');
+        let query = 'SELECT * FROM projects ORDER BY created_at DESC';
+        let queryParams = [];
+
+        if (req.user.role === 'project_manager') {
+            query = 'SELECT * FROM projects WHERE manager_id = ? ORDER BY created_at DESC';
+            queryParams = [req.user.id];
+        }
+
+        const [projects] = await db.query(query, queryParams);
         res.status(200).json(projects);
     } catch (error) {
         console.error('Error fetching projects:', error);
@@ -33,8 +41,8 @@ exports.createProject = async (req, res) => {
         const assignedMembersJson = assigned_members ? JSON.stringify(assigned_members) : '[]';
 
         const [result] = await db.query(
-            'INSERT INTO projects (title, description, start_date, end_date, assigned_members) VALUES (?, ?, ?, ?, ?)',
-            [title, description || '', start_date || null, end_date || null, assignedMembersJson]
+            'INSERT INTO projects (title, description, start_date, end_date, manager_id, assigned_members) VALUES (?, ?, ?, ?, ?, ?)',
+            [title, description || '', start_date || null, end_date || null, req.user.id, assignedMembersJson]
         );
 
         res.status(201).json({ message: 'Project created successfully', projectId: result.insertId });
