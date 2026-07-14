@@ -56,7 +56,7 @@ export default function AdminLayout({ children }) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F7F7F9] flex overflow-hidden">
+    <div className="h-screen bg-[#F7F7F9] flex overflow-hidden">
       {/* Sidebar */}
       <motion.div 
         animate={{ width: isCollapsed ? 80 : 260 }}
