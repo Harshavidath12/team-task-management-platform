@@ -225,8 +225,8 @@ export default function PMDashboard() {
                     if (assignedUsers.length === 0) return null;
 
                     return (
-                      <div className="flex items-center text-xs font-medium text-slate-500 max-w-[50%]">
-                        <User className="w-3.5 h-3.5 mr-1.5 text-slate-400 shrink-0" />
+                      <div className="flex items-center text-xs font-medium text-blue-600 max-w-[50%]">
+                        <User className="w-3.5 h-3.5 mr-1.5 text-blue-500 shrink-0" />
                         <span className="truncate" title={assignedUsers.map(u => u.name).join(', ')}>
                           {assignedUsers.map(u => u.name).join(', ')}
                         </span>
