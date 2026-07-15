@@ -101,7 +101,6 @@ const initDB = async () => {
                 user_id INT NOT NULL,
                 date_range VARCHAR(255) NOT NULL,
                 status ENUM('Draft', 'Submitted') DEFAULT 'Draft',
-                content TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
