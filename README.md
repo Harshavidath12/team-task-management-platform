@@ -1,6 +1,6 @@
 # Team Task Management Platform
 
-This is a full-stack web application built with **Next.js** (Frontend) and **Node.js/Express** (Backend), using **MySQL** for the database.
+This is a full-stack web application built with **Next.js** (Frontend) and **Node.js/Express** (Backend), using **MySQL** for the database. It includes an AI-powered admin assistant powered by the Groq API (Llama 3.3 70B).
 
 ## Instructions for Examiner / Evaluation
 
@@ -24,14 +24,13 @@ This project is built to be "plug-and-play" to make evaluation as easy as possib
    ```
 3. Create your environment variables file:
    - Copy the `.env.example` file and rename it to `.env`
-   - *(The default settings in this file are already configured for a standard local MySQL setup).*
+   - *(The default settings are already configured for a standard local MySQL setup).*
+   - **For the AI Chat Assistant:** Replace `your_groq_api_key_here` with a free API key from [console.groq.com](https://console.groq.com) (sign up is free, no billing required). If no key is provided, the rest of the application works perfectly — only the AI chat feature will be unavailable.
 4. Start the backend server:
    ```bash
    node server.js
-   # or
-   npm run dev
    ```
-> **Note:** Upon starting, the backend will automatically create the `project_dashboard_db` database, generate the `users` table, and securely seed the default Admin account.
+> **Note:** Upon starting, the backend will automatically create the `project_dashboard_db` database, generate all required tables, and securely seed the default Admin account.
 
 ### 2. Frontend Setup
 
