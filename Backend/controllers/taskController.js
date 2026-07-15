@@ -9,10 +9,8 @@ exports.getTasksByProject = async (req, res) => {
         // We will join with users to get the assignee and creator names
         const query = `
             SELECT t.*, 
-                   u1.name as assigned_to_name,
                    u2.name as created_by_name
             FROM tasks t
-            LEFT JOIN users u1 ON t.assigned_to = u1.id
             LEFT JOIN users u2 ON t.created_by = u2.id
             WHERE t.project_id = ?
             ORDER BY t.created_at DESC
@@ -33,7 +31,7 @@ exports.createTask = async (req, res) => {
             return res.status(403).json({ message: 'Access denied. Only Team Members can create tasks.' });
         }
 
-        const { project_id, title, description, assigned_to, due_date, status } = req.body;
+        const { project_id, title, description, due_date, status } = req.body;
 
         if (!project_id || !title) {
             return res.status(400).json({ message: 'Project ID and title are required' });
@@ -60,8 +58,8 @@ exports.createTask = async (req, res) => {
         }
 
         const [result] = await db.query(
-            'INSERT INTO tasks (project_id, title, description, assigned_to, created_by, due_date, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [project_id, title, description || '', assigned_to || null, req.user.id, due_date || null, taskStatus]
+            'INSERT INTO tasks (project_id, title, description, created_by, due_date, status) VALUES (?, ?, ?, ?, ?, ?)',
+            [project_id, title, description || '', req.user.id, due_date || null, taskStatus]
         );
 
         res.status(201).json({ message: 'Task created successfully', taskId: result.insertId });
@@ -85,7 +83,7 @@ exports.updateTaskStatus = async (req, res) => {
         const db = getDB();
         
         // Verify task exists and get details
-        const [taskCheck] = await db.query('SELECT project_id, assigned_to, created_by FROM tasks WHERE id = ?', [id]);
+        const [taskCheck] = await db.query('SELECT project_id, created_by FROM tasks WHERE id = ?', [id]);
         if (taskCheck.length === 0) {
             return res.status(404).json({ message: 'Task not found' });
         }
