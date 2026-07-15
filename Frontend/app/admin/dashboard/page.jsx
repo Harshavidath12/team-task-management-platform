@@ -388,7 +388,6 @@ export default function AdminDashboard() {
           />
         )}
       </AnimatePresence>
-      
     </div>
   );
 }

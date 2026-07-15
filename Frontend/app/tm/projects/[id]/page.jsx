@@ -164,6 +164,9 @@ export default function TMProjectKanban() {
                         Due : {new Date(task.due_date).toLocaleDateString()}
                       </div>
                     )}
+                    <div className="text-[10px] font-medium text-slate-400 bg-slate-50 px-2 py-1 rounded-lg">
+                      By: {task.created_by_name}
+                    </div>
                   </div>
                 </div>
               ))}

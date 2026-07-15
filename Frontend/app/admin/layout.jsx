@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Users, LogOut, LayoutDashboard, Settings, ChevronLeft, ChevronRight, CheckSquare, Folder, BarChart2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import AIChatWidget from '../../components/AIChatWidget';
 
 export default function AdminLayout({ children }) {
   const router = useRouter();
@@ -176,6 +177,7 @@ export default function AdminLayout({ children }) {
           </motion.div>
         </main>
       </div>
+      <AIChatWidget />
     </div>
   );
 }

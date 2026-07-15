@@ -141,9 +141,9 @@ exports.getAnalytics = async (req, res) => {
         }
 
         if (user_id && user_id !== 'all') {
-            taskWhere += ' AND (assigned_to = ? OR created_by = ?)';
+            taskWhere += ' AND (created_by = ?)';
             reportWhere += ' AND user_id = ?';
-            taskParams.push(user_id, user_id);
+            taskParams.push(user_id);
             reportParams.push(user_id);
         }
 
@@ -183,7 +183,7 @@ exports.getAnalytics = async (req, res) => {
         
         // 3. Workload Distribution
         const tWhereAlias = taskWhere.replace(/project_id/g, 't.project_id')
-                                     .replace(/assigned_to/g, 't.assigned_to')
+                                     .replace(/created_by/g, 't.created_by')
                                      .replace(/status/g, 't.status')
                                      .replace(/created_at/g, 't.created_at');
 
