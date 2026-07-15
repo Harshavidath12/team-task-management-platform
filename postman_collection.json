@@ -444,7 +444,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"project_id\": 1,\n  \"title\": \"Design Homepage UI\",\n  \"description\": \"Create the figma mockups for the homepage.\",\n  \"assigned_to\": 3,\n  \"due_date\": \"2026-07-15\",\n  \"status\": \"to_do\"\n}"
+              "raw": "{\n  \"project_id\": 1,\n  \"title\": \"Design Homepage UI\",\n  \"description\": \"Create the figma mockups for the homepage.\",\n  \"due_date\": \"2026-07-15\",\n  \"status\": \"to_do\"\n}"
             },
             "url": {
               "raw": "http://localhost:5000/api/tasks",
@@ -482,7 +482,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"status\": \"in_progress\",\n  \"assigned_to\": 3\n}"
+              "raw": "{\n  \"status\": \"in_progress\"\n}"
             },
             "url": {
               "raw": "http://localhost:5000/api/tasks/1",
