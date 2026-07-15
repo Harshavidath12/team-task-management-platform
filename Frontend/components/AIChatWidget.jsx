@@ -45,7 +45,8 @@ export default function AIChatWidget() {
       setMessages(prev => [...prev, { role: 'assistant', content: res.data.reply }]);
     } catch (error) {
       console.error('AI Chat Error:', error);
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I encountered an error while trying to fetch the data. Please try again later.' }]);
+      const errorMsg = error.response?.data?.message || 'Sorry, I encountered an error while trying to fetch the data. Please try again later.';
+      setMessages(prev => [...prev, { role: 'assistant', content: errorMsg }]);
     } finally {
       setIsLoading(false);
     }
@@ -147,18 +148,24 @@ export default function AIChatWidget() {
 
             {/* Input Area */}
             <div className="p-4 bg-white border-t border-slate-100 shrink-0">
-              <form onSubmit={handleSend} className="relative flex items-center">
-                <input
-                  type="text"
+              <form onSubmit={handleSend} className="relative flex items-end">
+                <textarea
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSend(e);
+                    }
+                  }}
                   placeholder="Ask about team workload or blockers..."
-                  className="w-full bg-slate-50 border border-slate-200 rounded-full pl-5 pr-14 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-700 placeholder:text-slate-400"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-[20px] pl-5 pr-14 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-700 placeholder:text-slate-400 resize-none min-h-[50px] max-h-[120px] scrollbar-thin scrollbar-thumb-slate-200"
+                  rows={Math.min(Math.max(input.split('\n').length, 1), 4)}
                 />
                 <button
                   type="submit"
                   disabled={!input.trim() || isLoading}
-                  className="absolute right-2 w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600 transition-colors shadow-sm"
+                  className="absolute right-2 bottom-1.5 w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600 transition-colors shadow-sm"
                 >
                   <Send className="w-4 h-4 ml-0.5" />
                 </button>
