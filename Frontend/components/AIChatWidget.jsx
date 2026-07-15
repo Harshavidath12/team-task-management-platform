@@ -55,21 +55,39 @@ export default function AIChatWidget() {
   return (
     <>
       {/* Floating Action Button */}
-      <motion.button
-        initial={{ scale: 0 }}
-        animate={{ scale: isOpen ? 0 : 1 }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-8 right-8 w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center shadow-2xl text-white z-50 overflow-hidden group"
-      >
-        <div className="absolute inset-0 bg-white/20 scale-0 group-hover:scale-100 transition-transform duration-300 rounded-full" />
-        <Bot className="w-8 h-8 relative z-10" />
-        <span className="absolute -top-1 -right-1 flex h-4 w-4">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border-2 border-white"></span>
-        </span>
-      </motion.button>
+      <AnimatePresence>
+        {!isOpen && (
+          <motion.button
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            whileHover="hover"
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setIsOpen(true)}
+            className="fixed bottom-8 right-8 flex items-center gap-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full shadow-2xl text-white z-50 overflow-hidden group cursor-pointer"
+          >
+            {/* Icon circle always visible */}
+            <div className="w-16 h-16 flex items-center justify-center relative shrink-0">
+              <div className="absolute inset-0 bg-white/10 scale-0 group-hover:scale-100 transition-transform duration-300 rounded-full" />
+              <Bot className="w-7 h-7 relative z-10" />
+              {/* Online ping dot */}
+              <span className="absolute top-2.5 right-2.5 flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-400 border-2 border-white"></span>
+              </span>
+            </div>
+            {/* "Ask AI" label slides in on hover */}
+            <motion.span
+              variants={{ hover: { width: 'auto', paddingRight: '18px', opacity: 1 } }}
+              initial={{ width: 0, paddingRight: 0, opacity: 0 }}
+              transition={{ type: 'spring', bounce: 0.3, duration: 0.4 }}
+              className="text-sm font-bold whitespace-nowrap overflow-hidden"
+            >
+              Ask AI
+            </motion.span>
+          </motion.button>
+        )}
+      </AnimatePresence>
 
       {/* Chat Window */}
       <AnimatePresence>
