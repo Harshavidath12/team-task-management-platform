@@ -6,6 +6,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const reportRoutes = require('./routes/reportRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 const { initDB } = require('./config/db');
 
 const app = express();
@@ -21,6 +22,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/ai', aiRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
