@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Shield, Trash2, CheckCircle2, Clock, Search, Filter, AlertCircle, X, ChevronDown, Check, MoreVertical } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../../utils/api';
+import AIChatWidget from '../../../components/AIChatWidget';
 
 // --- Reusable Components ---
 
@@ -389,6 +390,7 @@ export default function AdminDashboard() {
         )}
       </AnimatePresence>
       
+      <AIChatWidget />
     </div>
   );
 }
