@@ -83,13 +83,11 @@ const initDB = async () => {
                 project_id INT NOT NULL,
                 title VARCHAR(255) NOT NULL,
                 description TEXT,
-                status ENUM('to_do', 'in_progress', 'review', 'done', 'blocked') DEFAULT 'to_do',
-                assigned_to INT,
+                status ENUM('to_do', 'in_progress', 'review', 'done') DEFAULT 'to_do',
                 created_by INT NOT NULL,
                 due_date DATE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
-                FOREIGN KEY (assigned_to) REFERENCES users(id) ON DELETE SET NULL,
                 FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
             );
         `;
